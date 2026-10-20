@@ -352,6 +352,68 @@ class AndroidPlayerSettingsStoreTest {
     }
 
     @Test
+    fun `ignore HEVC levels defaults on and stays local scoped and resettable`() = runTest {
+        var profile = "profile-a"
+        var server = "https://one.example"
+        var device = "device-a"
+        val stores = mutableMapOf<String, DataStore<Preferences>>()
+        val store = AndroidPlayerSettingsStore(
+            context = mockContextStub(), legacyCache = fakeLegacyCache,
+            getActiveProfileId = { profile }, getServerUrl = { server },
+            getDeviceId = { device }, serverSettingsFlusher = fakeFlusher,
+            dataStoreFactory = { id -> stores.getOrPut(id) {
+                PreferenceDataStoreFactory.create(
+                    produceFile = { File(tempFolder.root, "hevc_$id.preferences_pb") },
+                )
+            } },
+        )
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        store.setIgnoreHevcLevelLimits(false)
+        assertFalse(store.ignoreHevcLevelLimitsFlow.first())
+        profile = "profile-b"
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        profile = "profile-a"
+        server = "https://two.example"
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        server = "https://one.example"
+        device = "device-b"
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        device = "device-a"
+        assertFalse(store.ignoreHevcLevelLimitsFlow.first())
+        store.setIgnoreHevcLevelLimits(true)
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        store.setIgnoreHevcLevelLimits(false)
+        store.resetAllDeviceSettings()
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        assertFalse(fakeFlusher.calls.any { it.key == PlaybackSettingsKeys.HevcLevelOverride })
+    }
+
+    @Test
+    fun `saved HEVC override Off stays off and each numeric level becomes on`() = runTest {
+        val dataStore = PreferenceDataStoreFactory.create(
+            produceFile = { File(tempFolder.root, "hevc_legacy.preferences_pb") },
+        )
+        val key = intPreferencesKey(PlaybackSettingsKeys.HevcLevelOverride)
+        dataStore.edit { it[key] = 0 }
+        val store = AndroidPlayerSettingsStore(
+            context = mockContextStub(), legacyCache = fakeLegacyCache,
+            getActiveProfileId = { activeProfileId }, getServerUrl = { serverUrl },
+            serverSettingsFlusher = fakeFlusher, dataStoreFactory = { dataStore },
+        )
+        assertFalse(store.ignoreHevcLevelLimitsFlow.first())
+        for (level in listOf(150, 153, 156, 180, 183, 186)) {
+            dataStore.edit { it[key] = level }
+            assertTrue(store.ignoreHevcLevelLimitsFlow.first(), "saved level $level should become On")
+        }
+        store.setIgnoreHevcLevelLimits(false)
+        assertEquals(0, dataStore.data.first()[key])
+        store.setIgnoreHevcLevelLimits(true)
+        assertEquals(1, dataStore.data.first()[key])
+        assertTrue(store.ignoreHevcLevelLimitsFlow.first())
+        assertTrue(fakeFlusher.calls.isEmpty())
+    }
+
+    @Test
     fun `setSubtitleAppearance round-trips through JSON`() = runTest {
         val store = newStore()
         val custom = SubtitleAppearance.DEFAULT.copy(

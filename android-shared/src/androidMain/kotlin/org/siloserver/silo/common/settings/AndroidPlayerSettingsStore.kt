@@ -288,6 +288,13 @@ class AndroidPlayerSettingsStore(
     override val forceHdrPassthroughFlow: Flow<Boolean> =
         profileScopedFlow(false) { p, s -> p.boolFor(s, PlaybackSettingsKeys.ForceHdrPassthrough, false) }
 
+    override val ignoreHevcLevelLimitsFlow: Flow<Boolean> =
+        profileScopedFlow(PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS) { p, s ->
+            // Keep the existing integer slot: zero stays Off, and any saved
+            // positive level becomes On without changing profile/device scope.
+            p.intFor(s, PlaybackSettingsKeys.HevcLevelOverride, 1) > 0
+        }
+
     override val letterboxExpansionFlow: Flow<String> =
         profileScopedFlow(LetterboxExpansion.Default) { p, s ->
             p.stringFor(s, PlaybackSettingsKeys.LetterboxExpansion, LetterboxExpansion.Default)
@@ -487,6 +494,9 @@ class AndroidPlayerSettingsStore(
 
     override suspend fun setForceHdrPassthrough(value: Boolean) =
         writeBoolLocal(PlaybackSettingsKeys.ForceHdrPassthrough, value)
+
+    override suspend fun setIgnoreHevcLevelLimits(value: Boolean) =
+        writeIntLocal(PlaybackSettingsKeys.HevcLevelOverride, if (value) 1 else 0)
 
     override suspend fun setLetterboxExpansion(value: String) {
         val safe = if (value in LetterboxExpansion.Valid) value else LetterboxExpansion.Default
@@ -922,6 +932,7 @@ class AndroidPlayerSettingsStore(
                 // settings the user most associates with this device untouched.
                 it.remove(booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.PictureInPictureEnabled))
                 it.remove(booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.ForceHdrPassthrough))
+                it.remove(intPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.HevcLevelOverride))
                 it.remove(stringPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.LetterboxExpansion))
                 it.remove(booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.TrueBlackBars))
                 it.remove(intPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.ResumeRewindSeconds))

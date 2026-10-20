@@ -302,6 +302,7 @@ fun TvSettingsScreen(
         onDolbyVisionEnabledChanged = viewModel::onDolbyVisionEnabledChanged,
         onDvProfile7HDR10FallbackChanged = viewModel::onDvProfile7HDR10FallbackChanged,
         onForceHdrPassthroughChanged = viewModel::onForceHdrPassthroughChanged,
+        onIgnoreHevcLevelLimitsChanged = viewModel::onIgnoreHevcLevelLimitsChanged,
         onTrueBlackBarsChanged = viewModel::onTrueBlackBarsChanged,
         onResumeRewindSecondsChanged = viewModel::onResumeRewindSecondsChanged,
         onPassOutThresholdChanged = viewModel::onPassOutThresholdChanged,
@@ -457,6 +458,7 @@ private fun SettingsSplitLayout(
     onDolbyVisionEnabledChanged: (Boolean) -> Unit,
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
+    onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -542,6 +544,7 @@ private fun SettingsSplitLayout(
             onDolbyVisionEnabledChanged = onDolbyVisionEnabledChanged,
             onDvProfile7HDR10FallbackChanged = onDvProfile7HDR10FallbackChanged,
             onForceHdrPassthroughChanged = onForceHdrPassthroughChanged,
+            onIgnoreHevcLevelLimitsChanged = onIgnoreHevcLevelLimitsChanged,
             onTrueBlackBarsChanged = onTrueBlackBarsChanged,
             onResumeRewindSecondsChanged = onResumeRewindSecondsChanged,
             onPassOutThresholdChanged = onPassOutThresholdChanged,
@@ -830,6 +833,7 @@ private fun SettingsDetailPane(
     onDolbyVisionEnabledChanged: (Boolean) -> Unit,
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
+    onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -890,6 +894,7 @@ private fun SettingsDetailPane(
             onDolbyVisionEnabledChanged = onDolbyVisionEnabledChanged,
             onDvProfile7HDR10FallbackChanged = onDvProfile7HDR10FallbackChanged,
             onForceHdrPassthroughChanged = onForceHdrPassthroughChanged,
+            onIgnoreHevcLevelLimitsChanged = onIgnoreHevcLevelLimitsChanged,
             onTrueBlackBarsChanged = onTrueBlackBarsChanged,
                 onResumeRewindSecondsChanged = onResumeRewindSecondsChanged,
                 onPassOutThresholdChanged = onPassOutThresholdChanged,
@@ -1218,6 +1223,7 @@ private fun TvPlaybackSettingsPane(
     onDolbyVisionEnabledChanged: (Boolean) -> Unit,
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
+    onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -1308,6 +1314,11 @@ private fun TvPlaybackSettingsPane(
                     checked = state.forceHdrPassthrough,
                     onCheckedChange = onForceHdrPassthroughChanged,
                 )
+                SettingsToggleRow(
+                    label = "Ignore HEVC Level Limits",
+                    checked = state.ignoreHevcLevelLimits,
+                    onCheckedChange = onIgnoreHevcLevelLimitsChanged,
+                )
                 // Android TV only: tvOS composites its own letterbox, so the
                 // Apple pane has no counterpart (silo-android#475).
                 SettingsToggleRow(
@@ -1324,6 +1335,10 @@ private fun TvPlaybackSettingsPane(
                         "support. It does not force the HDMI output into HDR; Android may still convert " +
                         "the picture to SDR. Enable it only if you've confirmed your TV supports the " +
                         "source format. Unsupported formats may produce a black screen or incorrect colors." +
+                        " Ignore HEVC Level Limits attempts playback even when a file's HEVC level " +
+                        "exceeds the decoder's reported limit. Other compatibility checks still apply. " +
+                        "Turn it off to use the decoder's reported levels. Files that exceed the " +
+                        "decoder's actual capabilities may stutter or fail." +
                         " True Black Bars stops Silo from drawing the bars around the picture during " +
                         "playback. Try it if they look grey in HDR or Dolby Vision, and turn it off again " +
                         "if they get lighter or show a thin line.",

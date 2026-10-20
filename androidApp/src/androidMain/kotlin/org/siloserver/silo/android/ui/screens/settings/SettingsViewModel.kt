@@ -126,6 +126,7 @@ data class SettingsUiState(
     // before the "Still watching?" prompt (0 = off).
     val resumeRewindSeconds: Int = 7,
     val passOutThreshold: Int = 3,
+    val ignoreHevcLevelLimits: Boolean = PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS,
 
     // Downloads
     val downloadsWifiOnly: Boolean = true,
@@ -381,6 +382,13 @@ class SettingsViewModel(
                 )
             }
         }.launchIn(viewModelScope)
+        playerSettingsStore.ignoreHevcLevelLimitsFlow
+            .onEach { enabled -> _uiState.update { it.copy(ignoreHevcLevelLimits = enabled) } }
+            .launchIn(viewModelScope)
+    }
+
+    fun setIgnoreHevcLevelLimits(value: Boolean) {
+        viewModelScope.launch { playerSettingsStore.setIgnoreHevcLevelLimits(value) }
     }
 
     fun setResumeRewindSeconds(value: Int) {

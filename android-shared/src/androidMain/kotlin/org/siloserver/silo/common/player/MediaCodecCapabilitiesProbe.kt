@@ -4,6 +4,7 @@ import android.media.MediaCodecInfo.CodecProfileLevel
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
+import org.siloserver.silo.common.settings.PlayerSettingsStore
 import org.siloserver.silo.model.playback.DolbyVisionProfileCapability
 import org.siloserver.silo.model.playback.HdrCapabilities
 import org.siloserver.silo.model.playback.VideoDecodeCapability
@@ -41,8 +42,37 @@ object MediaCodecCapabilitiesProbe {
     @Volatile
     private var cached: ProbeResult? = null
 
-    fun probe(): ProbeResult =
-        cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } }
+    /**
+     * Whether HEVC level limits are ignored (see
+     * [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]).
+     * Fed by [org.siloserver.silo.common.settings.IgnoreHevcLevelLimitsBinder].
+     */
+    @Volatile
+    var ignoreHevcLevelLimits: Boolean = PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS
+
+    fun probe(): ProbeResult = withHevcLevelLimitsIgnored(
+        cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } },
+        ignoreHevcLevelLimits,
+    )
+
+    /**
+     * An empty levels list makes the server skip only its level comparison
+     * (capabilities_v3.go, videoEligibleV3). Keep every other decoder bound
+     * intact and leave the cached hardware probe untouched so Off restores
+     * the advertised levels. No synthetic maximum level is needed.
+     */
+    internal fun withHevcLevelLimitsIgnored(result: ProbeResult, enabled: Boolean): ProbeResult {
+        if (!enabled) return result
+        return result.copy(
+            videoDecodeCapabilities = result.videoDecodeCapabilities.map { capability ->
+                if (capability.codec != "hevc") {
+                    capability
+                } else {
+                    capability.copy(levels = emptyList())
+                }
+            },
+        )
+    }
 
     /** Drops the cached probe so a test can re-run it against a shadowed codec list. */
     internal fun resetCacheForTest() {

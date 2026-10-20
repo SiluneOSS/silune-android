@@ -320,6 +320,32 @@ fun PlaybackEpisodesSection(
 }
 
 /**
+ * Playback → Decoder: whether HEVC level limits apply. See
+ * [PlaybackSettingsKeys.HevcLevelOverride].
+ */
+@Composable
+fun PlaybackDecoderSection(
+    ignoreHevcLevelLimits: Boolean,
+    onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsSection(
+        title = "Decoder",
+        footer = "Ignore HEVC Level Limits attempts playback even when a file's HEVC level exceeds " +
+            "the decoder's reported limit. Other compatibility checks still apply. " +
+            "Turn it off to use the decoder's reported levels. Files that exceed the decoder's " +
+            "actual capabilities may stutter or fail.",
+        modifier = modifier,
+    ) {
+        SettingsSwitchRow(
+            label = "Ignore HEVC Level Limits",
+            checked = ignoreHevcLevelLimits,
+            onCheckedChange = onIgnoreHevcLevelLimitsChanged,
+        )
+    }
+}
+
+/**
  * Playback → "Use Profile Settings", the Apple page's last group. Asks first:
  * it clears every playback setting changed on this device at once.
  */

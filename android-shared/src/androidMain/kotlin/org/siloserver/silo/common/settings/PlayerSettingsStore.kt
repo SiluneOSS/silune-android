@@ -36,6 +36,10 @@ object LetterboxExpansion {
 }
 
 interface PlayerSettingsStore {
+    companion object {
+        const val DEFAULT_IGNORE_HEVC_LEVEL_LIMITS = true
+    }
+
     /**
      * What the player does when an intro starts — `playback.intro_skip_mode`,
      * contract revision 7. See the server's
@@ -65,6 +69,10 @@ interface PlayerSettingsStore {
 
     /** See [org.siloserver.silo.model.settings.PlaybackSettingsKeys.ForceHdrPassthrough]. */
     val forceHdrPassthroughFlow: Flow<Boolean>
+
+    /** See [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]. */
+    val ignoreHevcLevelLimitsFlow: Flow<Boolean>
+        get() = kotlinx.coroutines.flow.flowOf(DEFAULT_IGNORE_HEVC_LEVEL_LIMITS)
 
     /**
      * How far to expand video whose black bars are encoded into the picture
@@ -184,6 +192,8 @@ interface PlayerSettingsStore {
     suspend fun setMatchContentFrameRate(value: Boolean)
     suspend fun setPictureInPictureEnabled(value: Boolean)
     suspend fun setForceHdrPassthrough(value: Boolean)
+
+    suspend fun setIgnoreHevcLevelLimits(value: Boolean) {}
     suspend fun setLetterboxExpansion(value: String) = Unit
     suspend fun setTrueBlackBars(value: Boolean) = Unit
     suspend fun setDownloadsWifiOnly(value: Boolean)
