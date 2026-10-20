@@ -66,6 +66,10 @@ interface PlayerSettingsStore {
     /** See [org.siloserver.silo.model.settings.PlaybackSettingsKeys.ForceHdrPassthrough]. */
     val forceHdrPassthroughFlow: Flow<Boolean>
 
+    /** See [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]. */
+    val hevcLevelOverrideFlow: Flow<Int>
+        get() = kotlinx.coroutines.flow.flowOf(0)
+
     /**
      * How far to expand video whose black bars are encoded into the picture
      * (a 2.39:1 film inside a 16:9 frame) — see [LetterboxExpansion].
@@ -184,6 +188,8 @@ interface PlayerSettingsStore {
     suspend fun setMatchContentFrameRate(value: Boolean)
     suspend fun setPictureInPictureEnabled(value: Boolean)
     suspend fun setForceHdrPassthrough(value: Boolean)
+
+    suspend fun setHevcLevelOverride(value: Int) {}
     suspend fun setLetterboxExpansion(value: String) = Unit
     suspend fun setTrueBlackBars(value: Boolean) = Unit
     suspend fun setDownloadsWifiOnly(value: Boolean)

@@ -180,6 +180,12 @@ fun SettingsPlaybackScreen(viewModel: SettingsViewModel, onBackClick: () -> Unit
                 onUseProfileSetting = viewModel::useProfileSetting,
             )
         }
+        item(key = "decoder") {
+            PlaybackDecoderSection(
+                hevcLevelOverride = state.hevcLevelOverride,
+                onHevcLevelOverrideChanged = viewModel::setHevcLevelOverride,
+            )
+        }
         if (state.episodeSpoilers.isSupported) {
             item(key = "spoilers") {
                 EpisodeSpoilerSettings(

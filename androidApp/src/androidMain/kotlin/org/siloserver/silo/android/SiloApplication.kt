@@ -48,6 +48,15 @@ class SiloApplication : Application(), Configuration.Provider, SingletonImageLoa
         koinApp.koin.get<org.siloserver.silo.repository.ImageCapabilitiesSession>().start(
             kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO),
         )
+        // Reports the user's HEVC level override in every capability claim.
+        runCatching {
+            org.siloserver.silo.common.settings.HevcLevelOverrideBinder.start(
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO),
+                koinApp.koin.get(),
+            )
+        }.onFailure {
+            android.util.Log.w("SiloApplication", "HEVC level override binder init failed: ${it::class.simpleName}")
+        }
         // Profile-verification recovery: clears a profile whose PIN token the
         // server stopped accepting (after an access change), including when
         // background work hits it first. Guarded — never load-bearing.

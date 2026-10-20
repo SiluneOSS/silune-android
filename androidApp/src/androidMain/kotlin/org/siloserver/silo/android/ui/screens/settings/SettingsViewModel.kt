@@ -126,6 +126,7 @@ data class SettingsUiState(
     // before the "Still watching?" prompt (0 = off).
     val resumeRewindSeconds: Int = 7,
     val passOutThreshold: Int = 3,
+    val hevcLevelOverride: Int = 0,
 
     // Downloads
     val downloadsWifiOnly: Boolean = true,
@@ -381,6 +382,13 @@ class SettingsViewModel(
                 )
             }
         }.launchIn(viewModelScope)
+        playerSettingsStore.hevcLevelOverrideFlow
+            .onEach { level -> _uiState.update { it.copy(hevcLevelOverride = level) } }
+            .launchIn(viewModelScope)
+    }
+
+    fun setHevcLevelOverride(value: Int) {
+        viewModelScope.launch { playerSettingsStore.setHevcLevelOverride(value) }
     }
 
     fun setResumeRewindSeconds(value: Int) {

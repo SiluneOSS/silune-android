@@ -41,8 +41,39 @@ object MediaCodecCapabilitiesProbe {
     @Volatile
     private var cached: ProbeResult? = null
 
-    fun probe(): ProbeResult =
-        cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } }
+    /**
+     * The user's HEVC level override (see
+     * [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]),
+     * in normalized form (level x 30). 0 reports the decoder's own levels.
+     * Fed by [org.siloserver.silo.common.settings.HevcLevelOverrideBinder].
+     */
+    @Volatile
+    var hevcLevelOverride: Int = 0
+
+    fun probe(): ProbeResult = withHevcLevelOverride(
+        cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } },
+        hevcLevelOverride,
+    )
+
+    /**
+     * Adds every standard HEVC level up to [override] to each hardware HEVC
+     * decoder's reported levels, so the server stops refusing streams tagged
+     * above the decoder's advertised ceiling. Levels the decoder already
+     * reports are kept.
+     */
+    internal fun withHevcLevelOverride(result: ProbeResult, override: Int): ProbeResult {
+        if (override <= 0) return result
+        val forced = HEVC_LEVELS.values.filter { it <= override }.toSet() + override
+        return result.copy(
+            videoDecodeCapabilities = result.videoDecodeCapabilities.map { capability ->
+                if (capability.codec != "hevc") {
+                    capability
+                } else {
+                    capability.copy(levels = (capability.levels + forced).distinct().sorted())
+                }
+            },
+        )
+    }
 
     /** Drops the cached probe so a test can re-run it against a shadowed codec list. */
     internal fun resetCacheForTest() {
