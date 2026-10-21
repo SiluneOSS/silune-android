@@ -112,3 +112,5 @@ own validation rather than depending on a second CI run.
 Tag reservation avoids GitHub's workflow-scope guard when `main` advances during
 compilation. Publication requires the existing tag to match the tested source;
 it never retargets a built APK to whatever happens to be on `main` later.
+The release call uses `--verify-tag` and omits `--target`, which is ignored for
+existing tags but can still trigger GitHub's workflow-file permission guard.

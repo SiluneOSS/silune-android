@@ -191,16 +191,16 @@ jobs:
           set -euo pipefail
           (cd dist && sha256sum --check SHA256SUMS)
           test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
-          if gh release view "${TAG}" --json isDraft,targetCommitish > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
+          if gh release view "${TAG}" --json isDraft > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
             # Never replace an already published build or move its source tag.
             if [[ "$(jq -r .isDraft "${RUNNER_TEMP}/existing-release.json")" != true ]]; then
               echo 'Release already published; leaving its assets unchanged.'
               exit 0
             fi
-            # Check the draft target as well as the reserved tag before resuming
-            # an interrupted upload.
-            test "$(jq -r .targetCommitish "${RUNNER_TEMP}/existing-release.json")" = "${SOURCE_SHA}"
           else
+            # The verified existing tag is authoritative. Omit --target:
+            # GitHub ignores it for existing tags but still applies workflow-
+            # scope checks to that otherwise unused release metadata.
             gh release create "${TAG}" --verify-tag --draft --prerelease \
               --title "${TITLE}" --notes-file dist/RELEASE_NOTES.md
           fi

@@ -100,7 +100,7 @@ if args[:2] == ['release', 'view']:
         sys.exit(1)
     else:
         print(json.dumps({'isDraft': state != 'published',
-                          'targetCommitish': ('b' if state == 'wrong-source' else 'a') * 40}))
+                          'targetCommitish': 'main' if state == 'default-target' else 'a' * 40}))
 elif args[0] == 'api':
     # A snapshot tag is reserved before the expensive build starts.
     print(('b' if state == 'wrong-tag' else 'a') * 40)
@@ -128,6 +128,7 @@ elif args[:2] == ['release', 'download']:
                 self.assertIn("--draft=false", calls)
                 if state == "new":
                     self.assertIn("--verify-tag", calls)
+                    self.assertNotIn("--target", calls)
 
     def test_tag_for_a_different_source_blocks_release_creation(self):
         code, calls, _ = self.run_publish("wrong-tag")
@@ -141,11 +142,11 @@ elif args[:2] == ['release', 'download']:
         self.assertNotIn("release upload", calls)
         self.assertNotIn("release edit", calls)
 
-    def test_different_source_is_not_overwritten(self):
-        code, calls, _ = self.run_publish("wrong-source")
-        self.assertNotEqual(code, 0)
-        self.assertNotIn("release upload", calls)
-        self.assertNotIn("release edit", calls)
+    def test_draft_with_unused_default_target_can_resume_from_verified_tag(self):
+        code, calls, output = self.run_publish("default-target")
+        self.assertEqual(code, 0, output)
+        self.assertIn("release upload", calls)
+        self.assertIn("--draft=false", calls)
 
     def test_failed_download_checksum_blocks_publication(self):
         code, calls, _ = self.run_publish("corrupt")
