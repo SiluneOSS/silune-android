@@ -18,7 +18,8 @@ Each run uses GitHub's branch-merge API to merge the exact current
 source is important because the fork's immediate parent is `edrock200/silo-android`;
 GitHub's ordinary fork-sync API would follow that parent instead. The merge
 preserves the fork's commits and fails on conflicts, without resetting
-or force-pushing the branch. It then checks out the exact merged commit, runs
+or force-pushing the branch. It reserves the dated tag while that commit is the
+head of `main`, then checks out the exact tagged commit and runs
 release unit tests and lint, and builds both APKs with JDK 21 and R8 optimization.
 The inherited Google Play and Discord workflows are disabled in the fork's
 Actions settings; their source files stay unchanged to reduce merge conflicts.
@@ -59,8 +60,8 @@ certificate fingerprint can be checked with `apksigner verify --print-certs`.
 
 The existing application/package IDs remain unchanged for protocol compatibility.
 An official or locally debug-signed APK uses a different signing identity and
-must be uninstalled before installing this fork; that removes its local app data
-and downloads. Later daily builds signed with the SigmaStreams key update in place.
+must be uninstalled before installing this fork; that clears the app's local data.
+Later daily builds signed with the SigmaStreams key update in place.
 
 Version codes use elapsed UTC seconds since 2026 plus a fork-specific base,
 remaining monotonic even if GitHub's workflow run counter resets. The full run
@@ -90,7 +91,8 @@ artwork does not grant a separate trademark or artwork license.
   discarding the fork commits. Start a new daily workflow after resolving it.
 - Failed test, lint, or build: inspect the failing job, fix the source, and start
   a new run. The sync may already have updated `main`; a merge is not evidence
-  that a release was built successfully.
+  that a release was built successfully. A reserved tag can exist without a
+  published release after a failed build; leave it in place and start a new run.
 - Failed upload: use Re-run failed jobs. Draft assets can be replaced while the
   draft is unpublished; public releases stay immutable.
 - Disabled schedule: re-enable the workflow in Actions. GitHub can disable
@@ -106,3 +108,7 @@ No personal access token is stored by this automation. The built-in repository
 secrets are supplied only to the build job. GitHub suppresses follow-on push
 workflows for changes made with this token, so the daily workflow performs its
 own validation rather than depending on a second CI run.
+
+Tag reservation avoids GitHub's workflow-scope guard when `main` advances during
+compilation. Publication requires the existing tag to match the tested source;
+it never retargets a built APK to whatever happens to be on `main` later.

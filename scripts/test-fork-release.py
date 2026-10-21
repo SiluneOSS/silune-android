@@ -38,6 +38,14 @@ class ForkReleaseTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             release.metadata(dt.datetime.now(dt.timezone.utc), 1, "main", "b" * 40)
 
+    def test_reserved_tag_survives_a_build_crossing_pacific_midnight(self):
+        now = dt.datetime(2026, 10, 23, 8, tzinfo=dt.timezone.utc)
+        info = release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.7")
+        self.assertEqual(info["tag"], "daily-2026-10-22.7")
+        self.assertEqual(info["version_name"], "2026.10.22-daily.7")
+        with self.assertRaises(ValueError):
+            release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.8")
+
     def test_requires_both_apks_before_packaging(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -94,10 +102,8 @@ if args[:2] == ['release', 'view']:
         print(json.dumps({'isDraft': state != 'published',
                           'targetCommitish': ('b' if state == 'wrong-source' else 'a') * 40}))
 elif args[0] == 'api':
-    # Draft releases deliberately have no tag in this fixture.
-    if state != 'published':
-        sys.exit(1)
-    print('a' * 40)
+    # A snapshot tag is reserved before the expensive build starts.
+    print(('b' if state == 'wrong-tag' else 'a') * 40)
 elif args[:2] == ['release', 'download']:
     destination = pathlib.Path(args[args.index('--dir') + 1])
     shutil.copytree(root / 'dist', destination)
@@ -120,6 +126,14 @@ elif args[:2] == ['release', 'download']:
                 self.assertIn("release upload", calls)
                 self.assertLess(calls.index("release download"), calls.index("release edit"))
                 self.assertIn("--draft=false", calls)
+                if state == "new":
+                    self.assertIn("--verify-tag", calls)
+
+    def test_tag_for_a_different_source_blocks_release_creation(self):
+        code, calls, _ = self.run_publish("wrong-tag")
+        self.assertNotEqual(code, 0)
+        self.assertNotIn("release create", calls)
+        self.assertNotIn("release upload", calls)
 
     def test_published_assets_are_not_replaced(self):
         code, calls, output = self.run_publish("published")

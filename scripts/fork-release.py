@@ -11,13 +11,18 @@ import sys
 from zoneinfo import ZoneInfo
 
 
-def metadata(now, run_number, source_sha, upstream_sha):
+def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None):
     if run_number < 1:
         raise ValueError("run number must be positive")
     for sha in (source_sha, upstream_sha):
         if not re.fullmatch(r"[0-9a-f]{40}", sha):
             raise ValueError("source commits must be full Git SHAs")
     day = now.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d")
+    if reserved_tag:
+        match = re.fullmatch(rf"daily-(\d{{4}}-\d{{2}}-\d{{2}})\.{run_number}", reserved_tag)
+        if not match:
+            raise ValueError("reserved tag must match this workflow run")
+        day = dt.date.fromisoformat(match[1]).isoformat()
     # Above the upstream release range, increasing with time even if this
     # workflow is recreated and GitHub resets its run counter.
     base = 400_000_000 + int((now - dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)).total_seconds())
@@ -40,7 +45,7 @@ def metadata(now, run_number, source_sha, upstream_sha):
 
 def prepare():
     info = metadata(dt.datetime.now(dt.timezone.utc), int(os.environ["GITHUB_RUN_NUMBER"]),
-                    os.environ["SOURCE_SHA"], os.environ["UPSTREAM_SHA"])
+                    os.environ["SOURCE_SHA"], os.environ["UPSTREAM_SHA"], os.environ.get("FORK_RELEASE_TAG"))
     path = Path(os.environ["RUNNER_TEMP"]) / "fork-build-info.json"
     path.write_text(json.dumps(info, indent=2) + "\n")
     with open(os.environ["GITHUB_ENV"], "a") as out:
@@ -80,7 +85,7 @@ def package(root, info, out):
         "- Both APKs are universal and signed with the persistent SigmaStreams key.\n"
         "- These are GitHub prereleases; the APKs are release builds, not debug builds.\n\n"
         "The initial switch from an official or locally debug-signed app requires an uninstall because "
-        "the signing keys differ; uninstalling removes local app data and downloads. "
+        "the signing keys differ; uninstalling clears the app's local data. "
         "Later SigmaStreams builds can update in place.\n\n"
         f"Source: https://github.com/SigmaStreams/silo-android/tree/{info['source_sha']}\n\n"
         f"Upstream checked: https://github.com/Silo-Server/silo-android/commit/{info['upstream_checked_sha']}\n\n"

@@ -26,6 +26,7 @@ jobs:
     outputs:
       source_sha: ${{ steps.sync.outputs.source_sha }}
       upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
+      tag: ${{ steps.sync.outputs.tag }}
     steps:
       - name: Check signing configuration
         env:
@@ -50,8 +51,20 @@ jobs:
             -f base=main -f head="${upstream_sha}" \
             -f commit_message="Merge Silo-Server/silo-android main"
           source_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)"
+          day="$(TZ=America/Los_Angeles date +%Y-%m-%d)"
+          tag="daily-${day}.${GITHUB_RUN_NUMBER}"
+          # Pin the snapshot while it is a branch head. GITHUB_TOKEN cannot
+          # create a new release tag for an unreferenced workflow-changing
+          # commit if main advances during the build.
+          if existing="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" --jq .object.sha 2>/dev/null)"; then
+            test "${existing}" = "${source_sha}"
+          else
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+              -f ref="refs/tags/${tag}" -f sha="${source_sha}"
+          fi
           echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
           echo "upstream_sha=${upstream_sha}" >> "${GITHUB_OUTPUT}"
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 
   build:
     needs: sync
@@ -97,6 +110,7 @@ jobs:
         env:
           SOURCE_SHA: ${{ needs.sync.outputs.source_sha }}
           UPSTREAM_SHA: ${{ needs.sync.outputs.upstream_sha }}
+          FORK_RELEASE_TAG: ${{ needs.sync.outputs.tag }}
         run: python3 scripts/fork-release.py prepare
 
       - name: Decode the persistent signing key
@@ -176,18 +190,18 @@ jobs:
         run: |
           set -euo pipefail
           (cd dist && sha256sum --check SHA256SUMS)
+          test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
           if gh release view "${TAG}" --json isDraft,targetCommitish > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
             # Never replace an already published build or move its source tag.
             if [[ "$(jq -r .isDraft "${RUNNER_TEMP}/existing-release.json")" != true ]]; then
-              test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
               echo 'Release already published; leaving its assets unchanged.'
               exit 0
             fi
-            # A new draft need not have a Git tag yet. Check its stored target
-            # instead so an interrupted upload can be resumed safely.
+            # Check the draft target as well as the reserved tag before resuming
+            # an interrupted upload.
             test "$(jq -r .targetCommitish "${RUNNER_TEMP}/existing-release.json")" = "${SOURCE_SHA}"
           else
-            gh release create "${TAG}" --target "${SOURCE_SHA}" --draft --prerelease \
+            gh release create "${TAG}" --verify-tag --draft --prerelease \
               --title "${TITLE}" --notes-file dist/RELEASE_NOTES.md
           fi
           gh release upload "${TAG}" dist/*.apk dist/SHA256SUMS dist/build-info.json --clobber
