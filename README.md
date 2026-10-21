@@ -1,3 +1,9 @@
+> **SigmaStreams Player fork:** unofficial Android phone and TV clients, with
+> SigmaStreams' glossy branding and an HEVC level override default of 6.2.
+> Download signed daily APKs from [Releases](https://github.com/SigmaStreams/silo-android/releases).
+> See [fork releases](docs/fork-releases.md) for the daily upstream merge, signing,
+> verification, and recovery workflow. The upstream project documentation follows.
+
 # Silo Android
 
 Android **phone** and **Android TV** clients for the [Silo](https://github.com/Silo-Server/silo-server) self-hosted media server — stream and download your movies, shows, music, audiobooks, and ebooks, with quality-aware playback and multi-server/multi-profile support.

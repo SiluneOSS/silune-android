@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Silo</string>
+    <string name="app_name">SigmaStreams Player</string>
 
     <!-- Navigation tabs -->
     <string name="tab_home">Home</string>
@@ -19,7 +19,7 @@
 
     <!-- Remote Control -->
     <string name="remote_battery_title">Keep Remote Control connected</string>
-    <string name="remote_battery_message">Allow Silo to run without battery restrictions so Remote Control can stay connected after you leave the app. In Battery optimization, choose Silo and set it to Not optimized.</string>
+    <string name="remote_battery_message">Allow SigmaStreams Player to run without battery restrictions so Remote Control can stay connected after you leave the app. In Battery optimization, choose SigmaStreams Player and set it to Not optimized.</string>
     <string name="remote_battery_settings">Battery settings</string>
     <string name="remote_battery_not_now">Not now</string>
 

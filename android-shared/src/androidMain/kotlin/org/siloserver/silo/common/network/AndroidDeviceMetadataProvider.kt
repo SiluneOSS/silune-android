@@ -50,9 +50,9 @@ class AndroidDeviceMetadataProvider(
 
     private fun clientNameFor(platform: String): String =
         when (platform) {
-            "android-tv" -> "Silo Android TV"
-            "android" -> "Silo Android"
-            else -> "Silo Android"
+            "android-tv" -> "SigmaStreams Player TV"
+            "android" -> "SigmaStreams Player"
+            else -> "SigmaStreams Player"
         }
 
     /**

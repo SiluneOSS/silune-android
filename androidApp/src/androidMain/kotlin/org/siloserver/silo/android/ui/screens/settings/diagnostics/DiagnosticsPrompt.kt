@@ -45,7 +45,7 @@ fun DiagnosticsPromptDialog(
         message = if (allowAlwaysSend) {
             reportDescription
         } else {
-            "$reportDescription\n\nThe report includes the Silo app version and build, Android version, " +
+            "$reportDescription\n\nThe report includes the SigmaStreams Player app version and build, Android version, " +
                 "device model, crash details, and diagnostic logs. Its pseudonymous credential is not " +
                 "linked to an account on your self-hosted server. Username, email, profile, server " +
                 "address, and playback session IDs are omitted. It never sends automatically and may " +

@@ -2,6 +2,8 @@
 .gradle/
 .kotlin/
 **/build/
+__pycache__/
+dist/
 
 # Android
 local.properties

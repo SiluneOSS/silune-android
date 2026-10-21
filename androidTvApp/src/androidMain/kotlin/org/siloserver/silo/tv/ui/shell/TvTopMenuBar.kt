@@ -701,7 +701,7 @@ data class TvAccountState(
 private fun TvSiloWordmark() {
     Image(
         painter = painterResource(id = R.drawable.silo_wordmark),
-        contentDescription = "Silo",
+        contentDescription = "SigmaStreams Player",
         contentScale = ContentScale.Fit,
         modifier = Modifier
             .height(TvSiloWordmarkHeight)
@@ -709,9 +709,9 @@ private fun TvSiloWordmark() {
     )
 }
 
-/** Brand lockup height inside the 32dp bar; the PNG is 764×400. */
+/** Brand lockup height inside the 32dp bar; the SigmaStreams PNG is 2172×724. */
 private val TvSiloWordmarkHeight = 26.dp
-private const val TvSiloWordmarkAspect = 764f / 400f
+private const val TvSiloWordmarkAspect = 3f
 
 /**
  * A center-cluster type tab with inverted-capsule chrome (§5.1):
