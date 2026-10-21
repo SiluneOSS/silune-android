@@ -1,0 +1,249 @@
+name: Silune Daily
+
+on:
+  schedule:
+    - cron: '37 15 * * *' # 08:37 Pacific daylight time / 07:37 standard time
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: Force build even when source files are unchanged
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: silune-release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  sync:
+    if: github.repository == 'SiluneOSS/silune-android' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.sync.outputs.source_sha }}
+      upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
+      tag: ${{ steps.tag.outputs.tag }}
+      should_build: ${{ steps.decision.outputs.should_build }}
+    steps:
+      - name: Merge upstream into main
+        id: sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          upstream_sha="$(gh api repos/Silo-Server/silo-android/commits/main --jq .sha)"
+          # Merge the official source SHA explicitly rather than following
+          # an intermediate fork's main branch.
+          # Fork-network commits are addressable by SHA; conflicts leave main intact.
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/merges" \
+            -f base=main -f head="${upstream_sha}" \
+            -f commit_message="Merge Silo-Server/silo-android main"
+          source_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)"
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
+          echo "upstream_sha=${upstream_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check out the merged source for the build decision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ steps.sync.outputs.source_sha }}
+          persist-credentials: false
+
+      - name: Check release tooling
+        run: python3 scripts/test-fork-release.py
+
+      - name: Decide whether source changes need a release
+        id: decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.sync.outputs.source_sha }}
+          FORCE_BUILD: ${{ github.event_name == 'workflow_dispatch' && inputs.force_build }}
+        run: python3 scripts/fork-release.py decide
+
+      - name: Reserve the release source tag
+        if: steps.decision.outputs.should_build == 'true'
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.sync.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          day="$(TZ=America/Los_Angeles date +%Y-%m-%d)"
+          tag="daily-${day}.${GITHUB_RUN_NUMBER}"
+          # Pin the snapshot while it is a branch head. GITHUB_TOKEN cannot
+          # create a new release tag for an unreferenced workflow-changing
+          # commit if main advances during the build.
+          if existing="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" --jq .object.sha 2>/dev/null)"; then
+            test "${existing}" = "${SOURCE_SHA}"
+          else
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+              -f ref="refs/tags/${tag}" -f sha="${SOURCE_SHA}"
+          fi
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+
+  build:
+    needs: sync
+    if: needs.sync.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      tag: ${{ steps.metadata.outputs.tag }}
+      title: ${{ steps.metadata.outputs.title }}
+    steps:
+      - name: Check signing configuration
+        env:
+          CONFIGURED: ${{ secrets.SILO_RELEASE_KEYSTORE_B64 != '' && secrets.SILO_RELEASE_KEYSTORE_PASSWORD != '' && secrets.SILO_RELEASE_KEY_ALIAS != '' }}
+        run: |
+          if [[ "${CONFIGURED}" != true ]]; then
+            echo '::error::Configure the persistent signing secrets described in docs/fork-releases.md.'
+            exit 1
+          fi
+
+      - name: Check out the merged commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.sync.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch official Silo version tags
+        run: git fetch --no-tags https://github.com/Silo-Server/silo-android.git 'refs/tags/v*:refs/silo-upstream/tags/v*'
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+
+      - name: Cache Robolectric Android runtimes
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.m2/repository/org/robolectric
+          key: fork-robolectric-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml', '**/build.gradle.kts') }}
+          restore-keys: |
+            fork-robolectric-${{ runner.os }}-
+
+      - name: Install the Android SDK packages
+        run: '"${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-36" "build-tools;35.0.0"'
+
+      - name: Check build dependencies
+        run: ./scripts/check-build-supply-chain.sh
+
+      - name: Stamp the fork build
+        id: metadata
+        env:
+          SOURCE_SHA: ${{ needs.sync.outputs.source_sha }}
+          UPSTREAM_SHA: ${{ needs.sync.outputs.upstream_sha }}
+          FORK_RELEASE_TAG: ${{ needs.sync.outputs.tag }}
+        run: python3 scripts/fork-release.py prepare
+
+      - name: Decode the persistent signing key
+        env:
+          SILO_RELEASE_KEYSTORE_B64: ${{ secrets.SILO_RELEASE_KEYSTORE_B64 }}
+          SILO_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.SILO_RELEASE_KEYSTORE_PASSWORD }}
+          SILO_RELEASE_KEY_ALIAS: ${{ secrets.SILO_RELEASE_KEY_ALIAS }}
+          SILO_GOOGLE_SERVICES_JSON_B64: ${{ secrets.SILO_GOOGLE_SERVICES_JSON_B64 }}
+        run: ./scripts/decode-release-secrets.sh
+
+      - name: Test, lint, and build the release APKs
+        env:
+          SILO_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.SILO_RELEASE_KEYSTORE_PASSWORD }}
+          SILO_RELEASE_KEY_ALIAS: ${{ secrets.SILO_RELEASE_KEY_ALIAS }}
+          SILO_RELEASE_KEY_PASSWORD: ${{ secrets.SILO_RELEASE_KEY_PASSWORD }}
+        run: |
+          ./gradlew \
+            test \
+            :androidApp:lintRelease :androidTvApp:lintRelease \
+            :androidApp:assembleRelease :androidTvApp:assembleRelease \
+            -Pandroid.r8.maxWorkers=1 --max-workers=2 --no-parallel --console=plain
+
+      - name: Verify and package both APKs
+        run: |
+          for module in androidApp androidTvApp; do
+            "${ANDROID_HOME}/build-tools/35.0.0/apksigner" verify --verbose --print-certs \
+              "${module}/build/outputs/apk/release/${module}-universal-release.apk"
+            test "$("${ANDROID_HOME}/cmdline-tools/latest/bin/apkanalyzer" manifest debuggable \
+              "${module}/build/outputs/apk/release/${module}-universal-release.apk")" = false
+          done
+          python3 scripts/fork-release.py package
+
+      - name: Keep the verified release files
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: silune-release
+          path: dist/
+          if-no-files-found: error
+          retention-days: 2
+
+      - name: Keep failure reports
+        if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: silune-failure-reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/lint-results*.html
+            **/build/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Remove the decoded key
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/silo-release.jks"
+
+  publish:
+    needs: [sync, build]
+    if: needs.sync.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download the verified release files
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: silune-release
+          path: dist
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.build.outputs.tag }}
+          TITLE: ${{ needs.build.outputs.title }}
+          SOURCE_SHA: ${{ needs.sync.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          (cd dist && sha256sum --check SHA256SUMS)
+          test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
+          if gh release view "${TAG}" --json isDraft > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
+            # Never replace an already published build or move its source tag.
+            if [[ "$(jq -r .isDraft "${RUNNER_TEMP}/existing-release.json")" != true ]]; then
+              echo 'Release already published; leaving its assets unchanged.'
+              exit 0
+            fi
+          else
+            # The verified existing tag is authoritative. Omit --target:
+            # GitHub ignores it for existing tags but still applies workflow-
+            # scope checks to that otherwise unused release metadata.
+            gh release create "${TAG}" --verify-tag --draft \
+              --title "${TITLE}" --notes-file dist/RELEASE_NOTES.md
+          fi
+          gh release upload "${TAG}" dist/*.apk dist/SHA256SUMS dist/build-info.json --clobber
+          # Read back the actual uploaded files before making the draft public.
+          gh release download "${TAG}" --dir "${RUNNER_TEMP}/readback"
+          cmp dist/SHA256SUMS "${RUNNER_TEMP}/readback/SHA256SUMS"
+          (cd "${RUNNER_TEMP}/readback" && sha256sum --check SHA256SUMS)
+          gh release edit "${TAG}" --draft=false --prerelease=false --latest
+          gh release view "${TAG}" --json url --jq .url >> "${GITHUB_STEP_SUMMARY}"
