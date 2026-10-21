@@ -63,11 +63,27 @@ An official or locally debug-signed APK uses a different signing identity and
 must be uninstalled before installing this fork; that clears the app's local data.
 Later daily builds signed with the SigmaStreams key update in place.
 
-Version codes use elapsed UTC seconds since 2026 plus a fork-specific base,
-remaining monotonic even if GitHub's workflow run counter resets. The full run
-counter appears in the version name and provenance. The upstream About-row build
-field has a 999 limit, so that display field cycles through 1..999; it does not
-control Android update ordering. Phone and TV retain distinct version codes.
+The APK version, in-app version label, and GitHub release title preserve Silo's
+version and build number, then append the Sigma build date:
+`1.0.0 (26) (sigma:10212026)`. The date is **MMDDYYYY in Pacific time** and is
+fixed when the workflow reserves its tag, even if compilation crosses midnight.
+Multiple builds on the same day share this visible date.
+
+The base version comes from the official Silo build tag with the highest
+repository-wide build number included in the checked upstream snapshot, such as
+`v1.0.0-beta.26`. Tags are fetched into a separate namespace; fork tags and newer
+upstream tags outside that snapshot cannot change its version. Main can contain
+changes after that tagged release, so `build-info.json` and the release notes
+retain both the base tag and exact checked source SHAs. A missing official build
+tag stops publication rather than inventing a version. The upstream build number
+is also preserved in the client build header reported to Silo.
+
+Android's internal version codes still use elapsed UTC seconds since 2026 plus a
+fork-specific base, remaining monotonic even if the workflow run counter resets.
+They control update ordering independently of the visible date. Phone and TV
+retain distinct version codes. The workflow counter remains in provenance and
+the unique `daily-YYYY-MM-DD.RUN` Git tag used for publication and recovery;
+previously published releases are unchanged.
 
 ## Branding sources
 

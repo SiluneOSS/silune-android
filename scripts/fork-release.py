@@ -2,16 +2,49 @@
 """Stamp and package the SigmaStreams fork without the upstream Play workflow."""
 import datetime as dt
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
 
-def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None):
+spec = importlib.util.spec_from_file_location("release_version", Path(__file__).with_name("release-version.py"))
+release_version = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(release_version)
+
+
+def upstream_version(root, upstream_sha):
+    """Use only official release tags included in this upstream snapshot.
+
+    The workflow fetches these into a separate namespace so inherited fork tags
+    cannot mislabel the build. Silo's repository-wide build counter determines
+    the newest build, including older +B tags and current -beta.B tags.
+    """
+    tags = subprocess.run(
+        ["git", "for-each-ref", f"--merged={upstream_sha}",
+         "--format=%(refname:strip=3)", "refs/silo-upstream/tags/"],
+        cwd=root, check=True, capture_output=True, text=True,
+    ).stdout.splitlines()
+    builds = []
+    for name in tags:
+        parsed = release_version.parse_tag(name)
+        if parsed and parsed[2] is not None and parsed[2] > 0:
+            version, _, build = parsed
+            builds.append((build, version, name))
+    if not builds:
+        raise ValueError("no official Silo build tag is included in this upstream snapshot")
+    build, version, tag = max(builds)
+    if build > 999:
+        raise ValueError("upstream build exceeds the Android build number limit")
+    return {"version": release_version.version_text(version), "build": build, "tag": tag}
+
+
+def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None, *, upstream):
     if run_number < 1:
         raise ValueError("run number must be positive")
     for sha in (source_sha, upstream_sha):
@@ -28,14 +61,17 @@ def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None):
     base = 400_000_000 + int((now - dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)).total_seconds())
     if not 0 < base <= 1_049_999_999:
         raise ValueError("version code is outside the Android build's allowed range")
+    sigma_date = dt.date.fromisoformat(day).strftime("%m%d%Y")
+    version_name = f"{upstream['version']} ({upstream['build']}) (sigma:{sigma_date})"
     return {
         "tag": f"daily-{day}.{run_number}",
-        "title": f"SigmaStreams Player daily {day} #{run_number}",
-        "version_name": f"{day.replace('-', '.')}-daily.{run_number}",
+        "title": f"SigmaStreams Player {version_name}",
+        "version_name": version_name,
         "version_code_base": base,
-        # The upstream About-row build field is limited to 1..999. The full
-        # run counter stays in version_name and this provenance file.
-        "build_number": (run_number - 1) % 999 + 1,
+        "build_number": upstream["build"],
+        "upstream_version": upstream["version"],
+        "upstream_version_tag": upstream["tag"],
+        "sigma_date": sigma_date,
         "run_number": run_number,
         "source_sha": source_sha,
         "upstream_checked_sha": upstream_sha,
@@ -44,8 +80,10 @@ def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None):
 
 
 def prepare():
+    upstream = upstream_version(Path.cwd(), os.environ["UPSTREAM_SHA"])
     info = metadata(dt.datetime.now(dt.timezone.utc), int(os.environ["GITHUB_RUN_NUMBER"]),
-                    os.environ["SOURCE_SHA"], os.environ["UPSTREAM_SHA"], os.environ.get("FORK_RELEASE_TAG"))
+                    os.environ["SOURCE_SHA"], os.environ["UPSTREAM_SHA"], os.environ.get("FORK_RELEASE_TAG"),
+                    upstream=upstream)
     path = Path(os.environ["RUNNER_TEMP"]) / "fork-build-info.json"
     path.write_text(json.dumps(info, indent=2) + "\n")
     with open(os.environ["GITHUB_ENV"], "a") as out:
@@ -80,6 +118,9 @@ def package(root, info, out):
         f"{info['title']}\n\n"
         "Unofficial, optimized release builds of SigmaStreams Player, a fork of the Silo Android clients. "
         "Includes the fork's HEVC level override, defaulting to 6.2.\n\n"
+        f"Version: **{info['version_name']}**. Based on Silo `{info['upstream_version_tag']}` "
+        "plus the upstream changes included in the source snapshot below. "
+        "The Sigma date uses Pacific time (MMDDYYYY).\n\n"
         "- `sigmastreams-player-phone.apk`: Android phones and tablets.\n"
         "- `sigmastreams-player-tv.apk`: Android TV / Google TV.\n"
         "- Both APKs are universal and signed with the persistent SigmaStreams key.\n"

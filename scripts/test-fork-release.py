@@ -9,20 +9,26 @@ import subprocess
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
 
 spec = importlib.util.spec_from_file_location("fork_release", Path(__file__).with_name("fork-release.py"))
 release = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(release)
+UPSTREAM = {"version": "1.0.0", "build": 26, "tag": "v1.0.0-beta.26"}
 
 
 class ForkReleaseTest(unittest.TestCase):
     def info(self, now=None, run=1):
-        return release.metadata(now or dt.datetime(2026, 10, 22, 1, tzinfo=dt.timezone.utc), run, "a" * 40, "b" * 40)
+        return release.metadata(now or dt.datetime(2026, 10, 22, 1, tzinfo=dt.timezone.utc), run,
+                                "a" * 40, "b" * 40, upstream=UPSTREAM)
 
     def test_pacific_day_and_monotonic_codes(self):
         first = self.info()
         later = self.info(dt.datetime(2026, 10, 22, 2, tzinfo=dt.timezone.utc), run=2)
         self.assertEqual(first["tag"], "daily-2026-10-21.1")
+        self.assertEqual(first["version_name"], "1.0.0 (26) (sigma:10212026)")
+        self.assertEqual(first["title"], "SigmaStreams Player 1.0.0 (26) (sigma:10212026)")
+        self.assertEqual(first["upstream_version_tag"], "v1.0.0-beta.26")
         self.assertGreater(later["version_code_base"], first["version_code_base"])
         self.assertLess(first["version_code_base"] * 2 + 1, 2_100_000_000)
 
@@ -30,21 +36,70 @@ class ForkReleaseTest(unittest.TestCase):
         first = self.info(run=999)
         later = self.info(dt.datetime(2026, 10, 23, 1, tzinfo=dt.timezone.utc), run=1)
         self.assertGreater(later["version_code_base"], first["version_code_base"])
-        self.assertEqual(self.info(run=1000)["build_number"], 1)
+        self.assertEqual(self.info(run=1000)["build_number"], 26)
+        self.assertEqual(first["version_name"], self.info(run=1000)["version_name"])
 
     def test_rejects_invalid_provenance(self):
         with self.assertRaises(ValueError):
             self.info(run=0)
         with self.assertRaises(ValueError):
-            release.metadata(dt.datetime.now(dt.timezone.utc), 1, "main", "b" * 40)
+            release.metadata(dt.datetime.now(dt.timezone.utc), 1, "main", "b" * 40, upstream=UPSTREAM)
 
     def test_reserved_tag_survives_a_build_crossing_pacific_midnight(self):
         now = dt.datetime(2026, 10, 23, 8, tzinfo=dt.timezone.utc)
-        info = release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.7")
+        info = release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.7", upstream=UPSTREAM)
         self.assertEqual(info["tag"], "daily-2026-10-22.7")
-        self.assertEqual(info["version_name"], "2026.10.22-daily.7")
+        self.assertEqual(info["version_name"], "1.0.0 (26) (sigma:10222026)")
         with self.assertRaises(ValueError):
-            release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.8")
+            release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.8", upstream=UPSTREAM)
+
+    def test_official_tag_selection_is_bound_to_the_upstream_snapshot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def git(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True,
+                                      capture_output=True, text=True).stdout.strip()
+
+            git("init", "--quiet")
+            git("-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                "commit", "--allow-empty", "--quiet", "-m", "first")
+            snapshot = git("rev-parse", "HEAD")
+            # A fork-only tag and a lexically higher legacy version must not win.
+            git("tag", "v9.9.9-beta.999")
+            git("update-ref", "refs/silo-upstream/tags/v1.0.1-rc.2+3", snapshot)
+            git("update-ref", "refs/silo-upstream/tags/v1.0.0+21", snapshot)
+            self.assertEqual(release.upstream_version(root, snapshot),
+                             {"version": "1.0.0", "build": 21, "tag": "v1.0.0+21"})
+            # Exercise an annotated official tag as well as lightweight tags.
+            git("-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                "tag", "-a", "v1.0.0-beta.26", "-m", "26")
+            git("update-ref", "refs/silo-upstream/tags/v1.0.0-beta.26",
+                git("rev-parse", "v1.0.0-beta.26"))
+            git("-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                "commit", "--allow-empty", "--quiet", "-m", "future")
+            git("update-ref", "refs/silo-upstream/tags/v1.1.0-beta.27", "HEAD")
+            self.assertEqual(release.upstream_version(root, snapshot), UPSTREAM)
+            self.assertEqual(release.upstream_version(root, "HEAD"),
+                             {"version": "1.1.0", "build": 27, "tag": "v1.1.0-beta.27"})
+            env = dict(os.environ, SOURCE_SHA="a" * 40, UPSTREAM_SHA=snapshot,
+                       GITHUB_RUN_NUMBER="7", FORK_RELEASE_TAG="daily-2026-10-21.7",
+                       RUNNER_TEMP=tmp, GITHUB_ENV=str(root / "env"), GITHUB_OUTPUT=str(root / "outputs"))
+            subprocess.run(["python3", str(Path(release.__file__).resolve()), "prepare"],
+                           cwd=root, env=env, check=True, capture_output=True, text=True)
+            self.assertIn("SILO_VERSION_NAME=1.0.0 (26) (sigma:10212026)\n", (root / "env").read_text())
+            self.assertIn("SILO_BUILD_NUMBER=26\n", (root / "env").read_text())
+            info = json.loads((root / "fork-build-info.json").read_text())
+            self.assertEqual(info["upstream_version_tag"], "v1.0.0-beta.26")
+
+    def test_missing_official_version_fails_instead_of_guessing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(["git", "init", "--quiet", tmp], check=True)
+            # Simulate a successful Git lookup with no official release refs.
+            with mock.patch.object(release.subprocess, "run") as run:
+                run.return_value.stdout = ""
+                with self.assertRaisesRegex(ValueError, "no official Silo build tag"):
+                    release.upstream_version(Path(tmp), "a" * 40)
 
     def test_requires_both_apks_before_packaging(self):
         with tempfile.TemporaryDirectory() as tmp:
