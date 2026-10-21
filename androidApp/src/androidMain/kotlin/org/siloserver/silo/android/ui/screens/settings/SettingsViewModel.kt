@@ -126,7 +126,7 @@ data class SettingsUiState(
     // before the "Still watching?" prompt (0 = off).
     val resumeRewindSeconds: Int = 7,
     val passOutThreshold: Int = 3,
-    val hevcLevelOverride: Int = 0,
+    val hevcLevelOverride: Int = PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE,
 
     // Downloads
     val downloadsWifiOnly: Boolean = true,

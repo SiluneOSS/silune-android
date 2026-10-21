@@ -36,6 +36,11 @@ object LetterboxExpansion {
 }
 
 interface PlayerSettingsStore {
+    companion object {
+        /** HEVC level 6.2 in the capability probe's normalized form (level x 30). */
+        const val DEFAULT_HEVC_LEVEL_OVERRIDE = 186
+    }
+
     /**
      * What the player does when an intro starts — `playback.intro_skip_mode`,
      * contract revision 7. See the server's

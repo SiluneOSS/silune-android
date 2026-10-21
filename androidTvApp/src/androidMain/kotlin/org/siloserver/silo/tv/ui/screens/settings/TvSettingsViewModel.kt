@@ -137,7 +137,7 @@ class TvSettingsViewModel(
         val subtitleMatchesDevice: Boolean = false,
         val dvProfile7HDR10Fallback: Boolean = false,
         val forceHdrPassthrough: Boolean = false,
-        val hevcLevelOverride: Int = 0,
+        val hevcLevelOverride: Int = PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE,
         val trueBlackBars: Boolean = false,
         val autoSkipCredits: Boolean = false,
         // Seconds to skip back on resume (0 = off); consecutive auto-advances

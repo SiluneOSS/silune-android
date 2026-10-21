@@ -289,7 +289,9 @@ class AndroidPlayerSettingsStore(
         profileScopedFlow(false) { p, s -> p.boolFor(s, PlaybackSettingsKeys.ForceHdrPassthrough, false) }
 
     override val hevcLevelOverrideFlow: Flow<Int> =
-        profileScopedFlow(0) { p, s -> p.intFor(s, PlaybackSettingsKeys.HevcLevelOverride, 0) }
+        profileScopedFlow(PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE) { p, s ->
+            p.intFor(s, PlaybackSettingsKeys.HevcLevelOverride, PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE)
+        }
 
     override val letterboxExpansionFlow: Flow<String> =
         profileScopedFlow(LetterboxExpansion.Default) { p, s ->

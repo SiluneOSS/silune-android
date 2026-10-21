@@ -4,6 +4,7 @@ import android.media.MediaCodecInfo.CodecProfileLevel
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
+import org.siloserver.silo.common.settings.PlayerSettingsStore
 import org.siloserver.silo.model.playback.DolbyVisionProfileCapability
 import org.siloserver.silo.model.playback.HdrCapabilities
 import org.siloserver.silo.model.playback.VideoDecodeCapability
@@ -48,7 +49,7 @@ object MediaCodecCapabilitiesProbe {
      * Fed by [org.siloserver.silo.common.settings.HevcLevelOverrideBinder].
      */
     @Volatile
-    var hevcLevelOverride: Int = 0
+    var hevcLevelOverride: Int = PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE
 
     fun probe(): ProbeResult = withHevcLevelOverride(
         cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } },
