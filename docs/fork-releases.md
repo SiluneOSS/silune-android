@@ -71,9 +71,10 @@ control Android update ordering. Phone and TV retain distinct version codes.
 
 ## Branding sources
 
-The launcher icons and in-app wordmark are exact copies of the existing approved
-SigmaStreams glossy appearance v2 assets. Android's adaptive launcher applies an
-inset around the transparent emblem so device icon masks do not clip it. The TV
+The launcher icons reuse the approved SigmaStreams glossy appearance v2 assets.
+The in-app wordmark uses a transparent-background derivative of the glossy
+wordmark so it blends into login and header surfaces. Android's adaptive launcher
+applies an inset around the transparent emblem so device icon masks do not clip it. The TV
 banner centers a 170-pixel-wide wordmark on a 320×180 dark field so it also fits
 Fire TV's centered square crop. Original upstream brand
 assets are replaced. Resource IDs and Kotlin symbol names remain stable to
