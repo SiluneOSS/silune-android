@@ -25,7 +25,7 @@ The inherited Google Play and Discord workflows are disabled in the fork's
 Actions settings; their source files stay unchanged to reduce merge conflicts.
 The fork workflow never invokes Play publishing or Discord posting.
 
-Each dated prerelease includes:
+Each dated release includes:
 
 - `sigmastreams-player-phone.apk`: universal phone/tablet build.
 - `sigmastreams-player-tv.apk`: universal Android TV / Google TV build.
@@ -33,8 +33,13 @@ Each dated prerelease includes:
   code base, and workflow run counter.
 - `SHA256SUMS`: checksums covering both APKs and the provenance file.
 
-The APKs are release builds even though GitHub labels the daily builds as
-prereleases. Nothing is published until signature checks pass and downloaded
+Each successful daily build is published as a regular GitHub release and
+explicitly marked **Latest**. These permanent links follow that release:
+
+- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk)
+- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk)
+
+The APKs are optimized release builds. Nothing is published until signature checks pass and downloaded
 release assets match the locally calculated checksums. A failed run leaves the
 previous public releases intact. A failed upload can leave an unpublished draft;
 rerunning the failed publish job completes it without replacing a public release.

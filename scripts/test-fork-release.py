@@ -127,7 +127,7 @@ class ForkReleaseTest(unittest.TestCase):
 class PublishRecoveryTest(unittest.TestCase):
     def run_publish(self, state):
         workflow = Path(__file__).resolve().parents[1] / ".github/workflows/fork-daily-release.yml"
-        publish = workflow.read_text().split("      - name: Publish the GitHub prerelease\n", 1)[1]
+        publish = workflow.read_text().split("      - name: Publish the GitHub release\n", 1)[1]
         script = textwrap.dedent(publish.split("        run: |\n", 1)[1])
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -181,6 +181,8 @@ elif args[:2] == ['release', 'download']:
                 self.assertIn("release upload", calls)
                 self.assertLess(calls.index("release download"), calls.index("release edit"))
                 self.assertIn("--draft=false", calls)
+                self.assertIn("--prerelease=false --latest", calls)
+                self.assertNotIn("--draft --prerelease", calls)
                 if state == "new":
                     self.assertIn("--verify-tag", calls)
                     self.assertNotIn("--target", calls)

@@ -184,7 +184,7 @@ jobs:
           name: sigmastreams-player-release
           path: dist
 
-      - name: Publish the GitHub prerelease
+      - name: Publish the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -205,7 +205,7 @@ jobs:
             # The verified existing tag is authoritative. Omit --target:
             # GitHub ignores it for existing tags but still applies workflow-
             # scope checks to that otherwise unused release metadata.
-            gh release create "${TAG}" --verify-tag --draft --prerelease \
+            gh release create "${TAG}" --verify-tag --draft \
               --title "${TITLE}" --notes-file dist/RELEASE_NOTES.md
           fi
           gh release upload "${TAG}" dist/*.apk dist/SHA256SUMS dist/build-info.json --clobber
@@ -213,5 +213,5 @@ jobs:
           gh release download "${TAG}" --dir "${RUNNER_TEMP}/readback"
           cmp dist/SHA256SUMS "${RUNNER_TEMP}/readback/SHA256SUMS"
           (cd "${RUNNER_TEMP}/readback" && sha256sum --check SHA256SUMS)
-          gh release edit "${TAG}" --draft=false --prerelease
+          gh release edit "${TAG}" --draft=false --prerelease=false --latest
           gh release view "${TAG}" --json url --jq .url >> "${GITHUB_STEP_SUMMARY}"
