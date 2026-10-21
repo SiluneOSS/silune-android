@@ -135,7 +135,7 @@ jobs:
           name: sigmastreams-player-release
           path: dist/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
 
       - name: Keep failure reports
         if: failure()
@@ -176,13 +176,16 @@ jobs:
         run: |
           set -euo pipefail
           (cd dist && sha256sum --check SHA256SUMS)
-          if gh release view "${TAG}" --json isDraft > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
+          if gh release view "${TAG}" --json isDraft,targetCommitish > "${RUNNER_TEMP}/existing-release.json" 2>/dev/null; then
             # Never replace an already published build or move its source tag.
-            test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
             if [[ "$(jq -r .isDraft "${RUNNER_TEMP}/existing-release.json")" != true ]]; then
+              test "$(gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --jq .object.sha)" = "${SOURCE_SHA}"
               echo 'Release already published; leaving its assets unchanged.'
               exit 0
             fi
+            # A new draft need not have a Git tag yet. Check its stored target
+            # instead so an interrupted upload can be resumed safely.
+            test "$(jq -r .targetCommitish "${RUNNER_TEMP}/existing-release.json")" = "${SOURCE_SHA}"
           else
             gh release create "${TAG}" --target "${SOURCE_SHA}" --draft --prerelease \
               --title "${TITLE}" --notes-file dist/RELEASE_NOTES.md
