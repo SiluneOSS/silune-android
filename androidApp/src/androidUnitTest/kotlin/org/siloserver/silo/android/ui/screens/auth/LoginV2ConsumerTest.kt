@@ -66,7 +66,15 @@ class LoginV2ConsumerTest {
                     assertEquals(1, calls); assertEquals(!switchServer, settled.loginSuccess)
                     assertEquals(if (switchServer) null else "access", tokens.getAccessToken())
                     if (switchServer) assertNotNull(settled.error)
-                } finally { vm.viewModelScope.cancel(); client.close(); discovery.close() }
+                } finally {
+                    // Cancellation can finish on the test Main dispatcher.
+                    // Await teardown before the outer finally resets Main.
+                    vm.viewModelScope.coroutineContext[Job]?.cancelAndJoin()
+                    client.close()
+                    discovery.close()
+                    client.coroutineContext[Job]?.join()
+                    discovery.coroutineContext[Job]?.join()
+                }
             }
         } finally { Dispatchers.resetMain() }
     }
