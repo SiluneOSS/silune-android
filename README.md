@@ -1,5 +1,5 @@
-> **SigmaStreams Player fork:** unofficial Android phone and TV clients, with
-> SigmaStreams' glossy branding and Ignore HEVC Level Limits enabled by default.
+> **Σ Player fork:** unofficial Android phone and TV clients, with
+> an original sigma mark in Silo’s color palette and Ignore HEVC Level Limits enabled by default.
 > Upstream syncs daily; changed source produces signed APKs in [Releases](https://github.com/SigmaStreams/silo-android/releases).
 > Permanent downloads: [phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk)
 > · [TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk).

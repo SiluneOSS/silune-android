@@ -1,11 +1,13 @@
-SigmaStreams Player brand assets
-================================
+Sigma Player brand assets
+========================
 
-The launcher icons and wordmark in this directory are SigmaStreams artwork,
-reused with the owner's authorization from the SigmaStreams glossy appearance
-v2 collection. These assets replace the upstream Silo logo, wordmark, icons,
-and TV banner. No license to the SigmaStreams name or artwork is granted by
-the source code license. The application's source remains AGPL-3.0-or-later.
+The launcher icons, wordmark, and TV banner use an original Greek sigma (Σ)
+shape and the blue, pink, and orange palette permitted by Silo's brand policy.
+They do not incorporate the Silo logo or wordmark. SVG sources are in branding/;
+scripts/generate-sigma-branding.py renders the Android copies.
+
+These original Sigma Player assets are licensed under AGPL-3.0-or-later,
+like the application's source code.
 
 The original Silo project's trademarks remain the property of Silo Media
 L.L.C.; see TRADEMARK.md for the upstream policy.

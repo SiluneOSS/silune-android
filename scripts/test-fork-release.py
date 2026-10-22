@@ -27,7 +27,7 @@ class ForkReleaseTest(unittest.TestCase):
         later = self.info(dt.datetime(2026, 10, 22, 2, tzinfo=dt.timezone.utc), run=2)
         self.assertEqual(first["tag"], "daily-2026-10-21.1")
         self.assertEqual(first["version_name"], "1.0.0 (26) (sigma:10212026)")
-        self.assertEqual(first["title"], "SigmaStreams Player 1.0.0 (26) (sigma:10212026)")
+        self.assertEqual(first["title"], "Σ Player 1.0.0 (26) (sigma:10212026)")
         self.assertEqual(first["upstream_version_tag"], "v1.0.0-beta.26")
         self.assertGreater(later["version_code_base"], first["version_code_base"])
         self.assertLess(first["version_code_base"] * 2 + 1, 2_100_000_000)

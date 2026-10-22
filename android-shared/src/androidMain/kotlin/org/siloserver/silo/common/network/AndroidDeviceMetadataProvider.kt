@@ -48,11 +48,12 @@ class AndroidDeviceMetadataProvider(
         )
     }
 
+    // HTTP client-name headers must stay ASCII; the displayed app name uses Σ.
     private fun clientNameFor(platform: String): String =
         when (platform) {
-            "android-tv" -> "SigmaStreams Player TV"
-            "android" -> "SigmaStreams Player"
-            else -> "SigmaStreams Player"
+            "android-tv" -> "Sigma Player TV"
+            "android" -> "Sigma Player"
+            else -> "Sigma Player"
         }
 
     /**

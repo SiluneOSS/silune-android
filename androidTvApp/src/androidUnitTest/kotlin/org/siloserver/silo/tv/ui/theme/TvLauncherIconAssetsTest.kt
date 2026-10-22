@@ -31,11 +31,11 @@ class TvLauncherIconAssetsTest {
         assertEquals(0, foreground.alphaAt(foreground.width - 1, foreground.height / 2), "Right edge should be transparent.")
         val adaptiveIcon = File("src/androidMain/res/mipmap-anydpi-v26/ic_launcher.xml").readText()
         assertTrue(adaptiveIcon.contains("android:inset=\"18dp\""),
-            "The glossy mark must be inset into the adaptive icon safe zone.")
+            "The sigma mark must be inset into the adaptive icon safe zone.")
         val bounds = foreground.opaqueBounds()
         assertTrue(bounds.minX > 0 && bounds.maxX < foreground.width - 1)
         assertTrue(bounds.minY > 0 && bounds.maxY < foreground.height - 1)
-        assertTrue(bounds.width > 100 && bounds.height > 100, "Glossy emblem must be visible: $bounds")
+        assertTrue(bounds.width > 100 && bounds.height > 100, "Sigma mark must be visible: $bounds")
 
     }
 
@@ -54,7 +54,7 @@ class TvLauncherIconAssetsTest {
     }
 
     @Test
-    fun legacyTvLauncherIconContainsCenteredColorSigmaStreamsMark() {
+    fun legacyTvLauncherIconContainsCenteredColorSigmaMark() {
         val icon = ImageIO.read(File("src/androidMain/res/mipmap-nodpi/ic_launcher.png"))
         val accentPixels = buildList {
             for (y in 0 until icon.height) {
@@ -104,7 +104,7 @@ class TvLauncherIconAssetsTest {
                 }
             }
         }
-        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the white SigmaStreams wordmark.")
+        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the white Sigma wordmark.")
         val wordmarkBounds = wordmarkPixels.pixelBounds()
         assertTrue(
             wordmarkBounds.minX >= 70 && wordmarkBounds.maxX <= 249,
@@ -134,7 +134,7 @@ class TvLauncherIconAssetsTest {
             }
         }
 
-        assertTrue(accentPixels.size > 100, "TV banner must retain the colorful SigmaStreams mark.")
+        assertTrue(accentPixels.size > 100, "TV banner must retain the colorful Sigma mark.")
         val minX = accentPixels.minOf { it.first }
         val maxX = accentPixels.maxOf { it.first }
         assertTrue(minX >= 70 && maxX <= 250, "Color mark must fit inside Fire TV's centered square crop.")

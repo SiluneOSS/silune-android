@@ -106,7 +106,7 @@ fun SiloWordmark(
 ) {
     androidx.compose.foundation.Image(
         painter = painterResource(id = R.drawable.silo_wordmark),
-        contentDescription = "SigmaStreams Player",
+        contentDescription = "Sigma Player",
         contentScale = ContentScale.Fit,
         modifier = modifier
             .width(width)

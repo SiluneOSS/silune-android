@@ -115,7 +115,7 @@ def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None, *, up
     version_name = f"{upstream['version']} ({upstream['build']}) (sigma:{sigma_date})"
     return {
         "tag": f"daily-{day}.{run_number}",
-        "title": f"SigmaStreams Player {version_name}",
+        "title": f"Σ Player {version_name}",
         "version_name": version_name,
         "version_code_base": base,
         "build_number": upstream["build"],
@@ -166,7 +166,7 @@ def package(root, info, out):
         f"{hashlib.sha256((out / name).read_bytes()).hexdigest()}  {name}\n" for name in names))
     (out / "RELEASE_NOTES.md").write_text(
         f"{info['title']}\n\n"
-        "Unofficial, optimized release builds of SigmaStreams Player, a fork of the Silo Android clients. "
+        "Unofficial, optimized release builds of Σ Player, a fork of the Silo Android clients. "
         "Includes the fork's HEVC level override, defaulting to 6.2.\n\n"
         f"Version: **{info['version_name']}**. Based on Silo `{info['upstream_version_tag']}` "
         "plus the upstream changes included in the source snapshot below. "

@@ -1,8 +1,8 @@
-# SigmaStreams Player daily releases
+# Σ Player daily releases
 
 The fork publishes optimized, signed phone and TV APKs on
 [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
-These are unofficial builds of the Silo Android clients, with SigmaStreams
+These are unofficial builds of the Silo Android clients, with Σ Player
 branding and Ignore HEVC Level Limits enabled by default. The playback setting
 is an On/Off switch: On removes HEVC level bounds from capability reports, while
 Off uses the decoder's reported levels. Other compatibility checks still apply.
@@ -10,10 +10,10 @@ Existing saved numeric levels become On; a saved Off stays Off.
 
 ## Schedule and manual builds
 
-The **SigmaStreams Player Daily** workflow runs every day at 15:37 UTC:
+The **Σ Player Daily** workflow runs every day at 15:37 UTC:
 08:37 Pacific during daylight saving time and 07:37 during standard time.
 GitHub can delay scheduled jobs. The workflow must stay on the default branch,
-`main`. It can also be started from Actions → SigmaStreams Player Daily →
+`main`. It can also be started from Actions → Σ Player Daily →
 Run workflow, selecting `main`. Leave **Force build** unchecked to use the same
 change check, or check it to compile and publish even when nothing changed.
 
@@ -108,19 +108,29 @@ previously published releases are unchanged.
 
 ## Branding sources
 
-The launcher icons reuse the approved SigmaStreams glossy appearance v2 assets.
-The in-app wordmark uses a transparent-background derivative of the glossy
-wordmark so it blends into login and header surfaces. Android's adaptive launcher
-applies an inset around the transparent emblem so device icon masks do not clip it. The TV
-banner centers a 170-pixel-wide wordmark on a 320×180 dark field so it also fits
-Fire TV's centered square crop. Original upstream brand
-assets are replaced. Resource IDs and Kotlin symbol names remain stable to
-reduce conflicts; those identifiers are not the displayed app identity.
+The app is named **Σ Player**. Accessibility descriptions and HTTP client-name
+headers use **Sigma Player** so screen readers pronounce the name clearly and
+network headers remain ASCII. The mark is an original Greek uppercase sigma,
+using Silo's blue (`#0034FB`), pink (`#F50B4F`), and orange (`#FA7604`) on the
+original deep blue icon field (`#010D9F`). It retains the upstream color scheme
+and mark-plus-name layout without incorporating Silo's logo or wordmark.
 
-The original files are maintained outside this repository under the SigmaStreams
-Operations branding collection. Builds require only the checked-in copies.
-The AGPL source license and third-party notices are preserved; SigmaStreams
-artwork does not grant a separate trademark or artwork license.
+The editable sources are `branding/sigma-mark.svg` and
+`branding/sigma-wordmark.svg`. Regenerate the checked-in PNGs with
+`python3 scripts/generate-sigma-branding.py` (requires `rsvg-convert`, Pillow,
+and DejaVu Sans Bold). The in-app wordmark has a transparent background.
+Android's adaptive launcher insets the transparent sigma mark; the 320×180 TV
+banner centers a 170-pixel-wide wordmark inside Fire TV's square crop.
+Resource IDs and Kotlin symbol names remain stable to reduce merge conflicts.
+The original Sigma Player artwork is licensed under AGPL-3.0-or-later.
+
+APK asset filenames retain `sigmastreams-player-` so existing permanent download
+links continue to work. The repository owner and persistent signing key stay the
+same; the displayed app and release names are Σ Player.
+
+The local `unbranded` branch restores the original Silo name, artwork, notices,
+and logo sizing while retaining the fork's playback and release tooling.
+It is prepared for use after written trademark permission is received.
 
 ## Failures and maintenance
 

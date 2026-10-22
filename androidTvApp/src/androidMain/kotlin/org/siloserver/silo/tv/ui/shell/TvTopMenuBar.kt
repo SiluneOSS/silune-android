@@ -701,7 +701,7 @@ data class TvAccountState(
 private fun TvSiloWordmark() {
     Image(
         painter = painterResource(id = R.drawable.silo_wordmark),
-        contentDescription = "SigmaStreams Player",
+        contentDescription = "Sigma Player",
         contentScale = ContentScale.Fit,
         modifier = Modifier
             .height(TvSiloWordmarkHeight)
@@ -709,7 +709,7 @@ private fun TvSiloWordmark() {
     )
 }
 
-/** Brand lockup height inside the 32dp bar; the SigmaStreams PNG is 2172×724. */
+/** Brand lockup height inside the 32dp bar; the Sigma Player PNG is 1200×400. */
 private val TvSiloWordmarkHeight = 26.dp
 private const val TvSiloWordmarkAspect = 3f
 
