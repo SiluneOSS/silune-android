@@ -1,6 +1,6 @@
 > **SigmaStreams Player fork:** unofficial Android phone and TV clients, with
 > SigmaStreams' glossy branding and an HEVC level override default of 6.2.
-> Download signed daily APKs from [Releases](https://github.com/SigmaStreams/silo-android/releases).
+> Upstream syncs daily; changed source produces signed APKs in [Releases](https://github.com/SigmaStreams/silo-android/releases).
 > Permanent downloads: [phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk)
 > · [TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk).
 > See [fork releases](docs/fork-releases.md) for the daily upstream merge, signing,

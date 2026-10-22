@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '37 15 * * *' # 08:37 Pacific daylight time / 07:37 standard time
   workflow_dispatch:
+    inputs:
+      force_build:
+        description: Force build even when source files are unchanged
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,17 +31,9 @@ jobs:
     outputs:
       source_sha: ${{ steps.sync.outputs.source_sha }}
       upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
-      tag: ${{ steps.sync.outputs.tag }}
+      tag: ${{ steps.tag.outputs.tag }}
+      should_build: ${{ steps.decision.outputs.should_build }}
     steps:
-      - name: Check signing configuration
-        env:
-          CONFIGURED: ${{ secrets.SILO_RELEASE_KEYSTORE_B64 != '' && secrets.SILO_RELEASE_KEYSTORE_PASSWORD != '' && secrets.SILO_RELEASE_KEY_ALIAS != '' }}
-        run: |
-          if [[ "${CONFIGURED}" != true ]]; then
-            echo '::error::Configure the persistent signing secrets described in docs/fork-releases.md.'
-            exit 1
-          fi
-
       - name: Merge upstream into main
         id: sync
         env:
@@ -51,29 +48,65 @@ jobs:
             -f base=main -f head="${upstream_sha}" \
             -f commit_message="Merge Silo-Server/silo-android main"
           source_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)"
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
+          echo "upstream_sha=${upstream_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check out the merged source for the build decision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ steps.sync.outputs.source_sha }}
+          persist-credentials: false
+
+      - name: Check release tooling
+        run: python3 scripts/test-fork-release.py
+
+      - name: Decide whether source changes need a release
+        id: decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.sync.outputs.source_sha }}
+          FORCE_BUILD: ${{ github.event_name == 'workflow_dispatch' && inputs.force_build }}
+        run: python3 scripts/fork-release.py decide
+
+      - name: Reserve the release source tag
+        if: steps.decision.outputs.should_build == 'true'
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.sync.outputs.source_sha }}
+        run: |
+          set -euo pipefail
           day="$(TZ=America/Los_Angeles date +%Y-%m-%d)"
           tag="daily-${day}.${GITHUB_RUN_NUMBER}"
           # Pin the snapshot while it is a branch head. GITHUB_TOKEN cannot
           # create a new release tag for an unreferenced workflow-changing
           # commit if main advances during the build.
           if existing="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" --jq .object.sha 2>/dev/null)"; then
-            test "${existing}" = "${source_sha}"
+            test "${existing}" = "${SOURCE_SHA}"
           else
             gh api --method POST "repos/${GITHUB_REPOSITORY}/git/refs" \
-              -f ref="refs/tags/${tag}" -f sha="${source_sha}"
+              -f ref="refs/tags/${tag}" -f sha="${SOURCE_SHA}"
           fi
-          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
-          echo "upstream_sha=${upstream_sha}" >> "${GITHUB_OUTPUT}"
           echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 
   build:
     needs: sync
+    if: needs.sync.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
       tag: ${{ steps.metadata.outputs.tag }}
       title: ${{ steps.metadata.outputs.title }}
     steps:
+      - name: Check signing configuration
+        env:
+          CONFIGURED: ${{ secrets.SILO_RELEASE_KEYSTORE_B64 != '' && secrets.SILO_RELEASE_KEYSTORE_PASSWORD != '' && secrets.SILO_RELEASE_KEY_ALIAS != '' }}
+        run: |
+          if [[ "${CONFIGURED}" != true ]]; then
+            echo '::error::Configure the persistent signing secrets described in docs/fork-releases.md.'
+            exit 1
+          fi
+
       - name: Check out the merged commit
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -104,10 +137,8 @@ jobs:
       - name: Install the Android SDK packages
         run: '"${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-36" "build-tools;35.0.0"'
 
-      - name: Check release tooling and build dependencies
-        run: |
-          python3 scripts/test-fork-release.py
-          ./scripts/check-build-supply-chain.sh
+      - name: Check build dependencies
+        run: ./scripts/check-build-supply-chain.sh
 
       - name: Stamp the fork build
         id: metadata
@@ -173,6 +204,7 @@ jobs:
 
   publish:
     needs: [sync, build]
+    if: needs.sync.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

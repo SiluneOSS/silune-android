@@ -18,6 +18,56 @@ release_version = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(release_version)
 
 
+def build_decision(source_sha, releases, tree_for, force=False):
+    """Compare source files with the last complete, published fork release."""
+    if not re.fullmatch(r"[0-9a-f]{40}", source_sha):
+        raise ValueError("source commit must be a full Git SHA")
+    if force:
+        return True, "Manual force build requested."
+    required = {"sigmastreams-player-phone.apk", "sigmastreams-player-tv.apk",
+                "build-info.json", "SHA256SUMS"}
+    published = [
+        release for release in releases
+        if release.get("draft") is False and release.get("prerelease") is False
+        and release.get("published_at")
+        and re.fullmatch(r"daily-\d{4}-\d{2}-\d{2}\.\d+", release.get("tag_name", ""))
+        and required <= {asset["name"] for asset in release.get("assets", []) if asset.get("size", 0) > 0}
+    ]
+    if not published:
+        return True, "No complete published fork release exists yet."
+    previous = max(published, key=lambda release: release["published_at"])["tag_name"]
+    current_tree, previous_tree = tree_for(source_sha), tree_for(previous)
+    if not all(re.fullmatch(r"[0-9a-f]{40}", tree) for tree in (current_tree, previous_tree)):
+        raise ValueError("GitHub returned an invalid source tree SHA")
+    if current_tree == previous_tree:
+        return False, f"Source files match the last published release ({previous}); skipping build."
+    return True, f"Source files changed since the last published release ({previous})."
+
+
+def decide():
+    repo = os.environ["GITHUB_REPOSITORY"]
+
+    def api(path, paginate=False):
+        command = ["gh", "api", f"repos/{repo}/{path}"]
+        if paginate:
+            command += ["--paginate", "--slurp"]
+        return json.loads(subprocess.run(command, check=True, capture_output=True, text=True).stdout)
+
+    force = os.environ.get("FORCE_BUILD", "false") == "true"
+    # A failed API request must fail the run, rather than silently skip work.
+    pages = [] if force else api("releases?per_page=100", paginate=True)
+    releases = [release for page in pages for release in page]
+    needed, reason = build_decision(
+        os.environ["SOURCE_SHA"], releases,
+        lambda ref: api(f"commits/{ref}")["commit"]["tree"]["sha"], force=force,
+    )
+    with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+        print(f"should_build={str(needed).lower()}", file=out)
+    with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
+        print(reason, file=out)
+    print(reason)
+
+
 def upstream_version(root, upstream_sha):
     """Use only official release tags included in this upstream snapshot.
 
@@ -137,9 +187,11 @@ def package(root, info, out):
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["prepare"]:
+    if sys.argv[1:] == ["decide"]:
+        decide()
+    elif sys.argv[1:] == ["prepare"]:
         prepare()
     elif sys.argv[1:] == ["package"]:
         package(Path.cwd(), json.loads(Path(os.environ["FORK_BUILD_INFO"]).read_text()), Path("dist"))
     else:
-        raise SystemExit("usage: fork-release.py prepare|package")
+        raise SystemExit("usage: fork-release.py decide|prepare|package")

@@ -124,6 +124,83 @@ class ForkReleaseTest(unittest.TestCase):
             self.assertEqual(len((out / "SHA256SUMS").read_text().splitlines()), 3)
 
 
+class BuildDecisionTest(unittest.TestCase):
+    source = "a" * 40
+    tag = "daily-2026-10-21.3"
+
+    def published(self, **changes):
+        result = {
+            "tag_name": self.tag, "draft": False, "prerelease": False,
+            "published_at": "2026-10-21T23:00:00Z",
+            "assets": [{"name": name, "size": 1} for name in [
+                "sigmastreams-player-phone.apk", "sigmastreams-player-tv.apk",
+                "build-info.json", "SHA256SUMS"]],
+        }
+        return dict(result, **changes)
+
+    def test_same_files_skip_even_when_commit_history_changed(self):
+        tree = mock.Mock(return_value="b" * 40)
+        needed, reason = release.build_decision(self.source, [self.published()], tree)
+        self.assertFalse(needed)
+        self.assertIn("skipping build", reason)
+        self.assertEqual(tree.call_args_list, [mock.call(self.source), mock.call(self.tag)])
+
+    def test_changed_files_build_and_failed_runs_do_not_advance_baseline(self):
+        for unfinished in [[], [self.published(tag_name="daily-2026-10-22.4", draft=True,
+                                              published_at="2026-10-22T23:00:00Z")]]:
+            with self.subTest(unfinished=unfinished):
+                tree = mock.Mock(side_effect=["a" * 40, "b" * 40])
+                needed, _ = release.build_decision(self.source, [self.published(), *unfinished], tree)
+                self.assertTrue(needed)
+                self.assertEqual(tree.call_args_list[-1], mock.call(self.tag))
+
+    def test_first_release_and_incomplete_releases_require_builds(self):
+        candidates = [
+            [], [self.published(draft=True)], [self.published(prerelease=True)],
+            [self.published(assets=[])], [self.published(tag_name="v1.0.0")],
+        ]
+        for releases in candidates:
+            with self.subTest(releases=releases):
+                tree = mock.Mock(side_effect=AssertionError("no baseline should be compared"))
+                self.assertTrue(release.build_decision(self.source, releases, tree)[0])
+
+    def test_most_recent_publication_wins_over_api_order(self):
+        previous = self.published(tag_name="daily-2026-10-20.2", published_at="2026-10-20T23:00:00Z")
+        tree = mock.Mock(return_value="b" * 40)
+        self.assertFalse(release.build_decision(self.source, [self.published(), previous], tree)[0])
+        self.assertEqual(tree.call_args_list[-1], mock.call(self.tag))
+
+    def test_force_build_does_not_need_release_or_tree_queries(self):
+        tree = mock.Mock(side_effect=AssertionError("force must not compare trees"))
+        self.assertTrue(release.build_decision(self.source, [self.published()], tree, force=True)[0])
+        tree.assert_not_called()
+
+    def test_lookup_errors_and_invalid_trees_do_not_silently_skip(self):
+        with self.assertRaises(subprocess.CalledProcessError):
+            release.build_decision(self.source, [self.published()],
+                                   mock.Mock(side_effect=subprocess.CalledProcessError(1, "gh")))
+        with self.assertRaisesRegex(ValueError, "tree SHA"):
+            release.build_decision(self.source, [self.published()], lambda ref: "")
+
+    def test_decide_reads_all_release_pages_and_writes_job_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output, summary = Path(tmp) / "output", Path(tmp) / "summary"
+            env = dict(GITHUB_REPOSITORY="SigmaStreams/silo-android", SOURCE_SHA=self.source,
+                       FORCE_BUILD="false", GITHUB_OUTPUT=str(output), GITHUB_STEP_SUMMARY=str(summary))
+            def run(command, **kwargs):
+                if "releases?per_page=100" in command[2]:
+                    self.assertIn("--paginate", command)
+                    self.assertIn("--slurp", command)
+                    body = [[], [self.published()]]
+                else:
+                    body = {"commit": {"tree": {"sha": "b" * 40}}}
+                return subprocess.CompletedProcess(command, 0, stdout=json.dumps(body))
+            with mock.patch.dict(os.environ, env), mock.patch.object(release.subprocess, "run", side_effect=run):
+                release.decide()
+            self.assertEqual(output.read_text(), "should_build=false\n")
+            self.assertIn("skipping build", summary.read_text())
+
+
 class PublishRecoveryTest(unittest.TestCase):
     def run_publish(self, state):
         workflow = Path(__file__).resolve().parents[1] / ".github/workflows/fork-daily-release.yml"

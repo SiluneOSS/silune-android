@@ -11,14 +11,26 @@ The **SigmaStreams Player Daily** workflow runs every day at 15:37 UTC:
 08:37 Pacific during daylight saving time and 07:37 during standard time.
 GitHub can delay scheduled jobs. The workflow must stay on the default branch,
 `main`. It can also be started from Actions → SigmaStreams Player Daily →
-Run workflow, selecting `main`.
+Run workflow, selecting `main`. Leave **Force build** unchecked to use the same
+change check, or check it to compile and publish even when nothing changed.
 
 Each run uses GitHub's branch-merge API to merge the exact current
 `Silo-Server/silo-android` `main` commit into this fork's `main`. The explicit
 source is important because the fork's immediate parent is `edrock200/silo-android`;
 GitHub's ordinary fork-sync API would follow that parent instead. The merge
 preserves the fork's commits and fails on conflicts, without resetting
-or force-pushing the branch. It reserves the dated tag while that commit is the
+or force-pushing the branch. After syncing, it compares the merged source's Git
+tree (all tracked file contents) with the source tag of the most recently
+published complete SigmaStreams release. Matching contents skip compilation
+and publishing, even if commit history changed. The daily sync still completes,
+and the run summary explains the decision. Drafts, prereleases and releases
+missing either APK or the verification files do not advance this baseline.
+Failed builds therefore retry on the next daily run until those changes ship.
+Changes in this fork also trigger a build, even when upstream is unchanged.
+API errors fail the check instead of silently skipping it. This comparison
+includes documentation and workflow files as well as app code.
+
+When a build is needed, it reserves the dated tag while that commit is the
 head of `main`, then checks out the exact tagged commit and runs
 release unit tests and lint, and builds both APKs with JDK 21 and R8 optimization.
 The inherited Google Play and Discord workflows are disabled in the fork's
@@ -57,7 +69,8 @@ Repository Actions secrets:
 - `SILO_GOOGLE_SERVICES_JSON_B64`: optional Firebase configuration. Without it,
   phone push notifications are unavailable; the rest of the app still builds.
 
-The first three secrets are required before upstream synchronization starts.
+The first three secrets are required before compilation starts. Daily upstream
+synchronization and the change check do not depend on signing secrets.
 The key must remain the same for future APKs to install as updates. Keep a
 private backup of the key and passwords outside Git. Signing material is decoded
 only on the temporary build runner and removed after the build. The public
