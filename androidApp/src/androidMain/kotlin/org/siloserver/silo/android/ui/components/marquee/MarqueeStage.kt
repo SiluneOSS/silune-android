@@ -102,10 +102,10 @@ fun MarqueeStage(
 
 /** The Silo wordmark for a first-run top bar. */
 @Composable
-fun MarqueeWordmark(width: Dp = 150.dp) {
+fun MarqueeWordmark(width: Dp = 92.dp) {
     Image(
         painter = painterResource(R.drawable.silo_wordmark),
-        contentDescription = "Sigma Player",
+        contentDescription = "Silo",
         contentScale = ContentScale.Fit,
         modifier = Modifier.width(width),
     )

@@ -102,14 +102,14 @@ fun MainAppTopBar(
 @Composable
 fun SiloWordmark(
     modifier: Modifier = Modifier,
-    width: Dp = 144.dp,
+    width: Dp = 72.dp,
 ) {
     androidx.compose.foundation.Image(
         painter = painterResource(id = R.drawable.silo_wordmark),
-        contentDescription = "Sigma Player",
+        contentDescription = "Silo",
         contentScale = ContentScale.Fit,
         modifier = modifier
             .width(width)
-            .height(width / 3f),
+            .height(width * 0.52f),
     )
 }

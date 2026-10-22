@@ -1,4 +1,4 @@
-name: Σ Player Daily
+name: Silo Fork Daily
 
 on:
   schedule:
@@ -181,7 +181,7 @@ jobs:
       - name: Keep the verified release files
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: sigmastreams-player-release
+          name: silo-release
           path: dist/
           if-no-files-found: error
           retention-days: 2
@@ -190,7 +190,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: sigmastreams-player-failure-reports
+          name: silo-failure-reports
           path: |
             **/build/reports/tests/
             **/build/reports/lint-results*.html
@@ -213,7 +213,7 @@ jobs:
       - name: Download the verified release files
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
-          name: sigmastreams-player-release
+          name: silo-release
           path: dist
 
       - name: Publish the GitHub release

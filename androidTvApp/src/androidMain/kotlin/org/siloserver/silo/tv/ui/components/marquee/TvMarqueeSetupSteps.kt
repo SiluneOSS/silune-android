@@ -82,7 +82,7 @@ private fun Step(number: Int, title: String, picture: @Composable () -> Unit) {
     }
 }
 
-/** The sigma mark on the app's deep blue icon field. */
+/** The Silo app icon: the mark on the deep blue field. */
 @Composable
 private fun AppIconPicture() {
     Box(
@@ -93,7 +93,7 @@ private fun AppIconPicture() {
             .border(1.dp, Color.White.copy(alpha = 0.18f), RoundedCornerShape(11.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        // Keep the sigma mark inside the surrounding icon field.
+        // The icon draws the mark at 84% of its height.
         Image(
             painter = painterResource(R.drawable.silo_mark),
             contentDescription = null,
