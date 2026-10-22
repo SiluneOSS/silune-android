@@ -12,11 +12,11 @@ class TvLauncherIconAssetsTest {
     @Test
     fun adaptiveForegroundUsesMarkOnlySafeZoneInsteadOfBakedSquareTile() {
         val foreground = ImageIO.read(
-            File("src/androidMain/res/mipmap-xxxhdpi/ic_launcher_foreground.png"),
+            File("src/androidMain/res/mipmap-nodpi/ic_launcher_foreground.png"),
         )
 
-        assertEquals(432, foreground.width)
-        assertEquals(432, foreground.height)
+        assertEquals(512, foreground.width)
+        assertEquals(512, foreground.height)
         assertTrue(
             foreground.colorModel.hasAlpha(),
             "Adaptive foreground must use transparency so Google TV can own the launcher mask.",
@@ -29,36 +29,19 @@ class TvLauncherIconAssetsTest {
         assertEquals(0, foreground.alphaAt(foreground.width / 2, foreground.height - 1), "Bottom edge should be transparent.")
         assertEquals(0, foreground.alphaAt(0, foreground.height / 2), "Left edge should be transparent.")
         assertEquals(0, foreground.alphaAt(foreground.width - 1, foreground.height / 2), "Right edge should be transparent.")
-        assertEquals(
-            0,
-            foreground.alphaAt(foreground.width / 2, foreground.height / 2),
-            "The adaptive foreground should be mark-only, not a centered opaque square tile.",
-        )
-
+        val adaptiveIcon = File("src/androidMain/res/mipmap-anydpi-v26/ic_launcher.xml").readText()
+        assertTrue(adaptiveIcon.contains("android:inset=\"18dp\""),
+            "The sigma mark must be inset into the adaptive icon safe zone.")
         val bounds = foreground.opaqueBounds()
-        assertTrue(
-            bounds.minX in 170..185 && bounds.maxX in 245..265,
-            "Opaque mark should stay centered horizontally inside the adaptive safe zone: $bounds",
-        )
-        assertTrue(
-            bounds.minY in 80..100 && bounds.maxY in 330..355,
-            "Opaque mark should stay vertically inset inside the adaptive safe zone: $bounds",
-        )
-        assertTrue(
-            bounds.width in 70..100 && bounds.height in 240..275,
-            "Adaptive foreground should contain a tall Silo mark, not a full tile: $bounds",
-        )
+        assertTrue(bounds.minX > 0 && bounds.maxX < foreground.width - 1)
+        assertTrue(bounds.minY > 0 && bounds.maxY < foreground.height - 1)
+        assertTrue(bounds.width > 100 && bounds.height > 100, "Sigma mark must be visible: $bounds")
+
     }
 
     @Test
-    fun legacyTvLauncherIconsAreOpaqueSquaresAtRequiredDensities() {
-        val expected = mapOf(
-            "mipmap-mdpi/ic_launcher.png" to 80,
-            "mipmap-hdpi/ic_launcher.png" to 120,
-            "mipmap-xhdpi/ic_launcher.png" to 160,
-            "mipmap-xxhdpi/ic_launcher.png" to 240,
-            "mipmap-xxxhdpi/ic_launcher.png" to 320,
-        )
+    fun legacyTvLauncherIconIsAnOpaqueDensityIndependentSquare() {
+        val expected = mapOf("mipmap-nodpi/ic_launcher.png" to 512)
 
         expected.forEach { (path, size) ->
             val image = ImageIO.read(File("src/androidMain/res/$path"))
@@ -71,8 +54,8 @@ class TvLauncherIconAssetsTest {
     }
 
     @Test
-    fun legacyTvLauncherIconContainsCenteredColorSiloMark() {
-        val icon = ImageIO.read(File("src/androidMain/res/mipmap-xxxhdpi/ic_launcher.png"))
+    fun legacyTvLauncherIconContainsCenteredColorSigmaMark() {
+        val icon = ImageIO.read(File("src/androidMain/res/mipmap-nodpi/ic_launcher.png"))
         val accentPixels = buildList {
             for (y in 0 until icon.height) {
                 for (x in 0 until icon.width) {
@@ -121,7 +104,7 @@ class TvLauncherIconAssetsTest {
                 }
             }
         }
-        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the white Silo wordmark.")
+        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the white Sigma wordmark.")
         val wordmarkBounds = wordmarkPixels.pixelBounds()
         assertTrue(
             wordmarkBounds.minX >= 70 && wordmarkBounds.maxX <= 249,
@@ -151,7 +134,7 @@ class TvLauncherIconAssetsTest {
             }
         }
 
-        assertTrue(accentPixels.size > 100, "TV banner must retain the colorful Silo mark.")
+        assertTrue(accentPixels.size > 100, "TV banner must retain the colorful Sigma mark.")
         val minX = accentPixels.minOf { it.first }
         val maxX = accentPixels.maxOf { it.first }
         assertTrue(minX >= 70 && maxX <= 250, "Color mark must fit inside Fire TV's centered square crop.")

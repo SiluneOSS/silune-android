@@ -653,7 +653,7 @@ private fun SettingsRail(
             onFocused = { railActionHasFocus = true },
         )
         Text(
-            text = "Silo ${clientVersionLabel(BuildConfig.VERSION_NAME, BuildConfig.BUILD_NUMBER)}",
+            text = "Σ Player ${clientVersionLabel(BuildConfig.VERSION_NAME, BuildConfig.BUILD_NUMBER)}",
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp, lineHeight = 18.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             modifier = Modifier.padding(start = 12.dp, top = 6.dp),

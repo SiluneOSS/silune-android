@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Sigma Player mark</title>
+  <defs>
+    <linearGradient id="sigma-colors" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0034FB"/>
+      <stop offset="0.32" stop-color="#0034FB"/>
+      <stop offset="0.32" stop-color="#F50B4F"/>
+      <stop offset="0.68" stop-color="#F50B4F"/>
+      <stop offset="0.68" stop-color="#FA7604"/>
+      <stop offset="1" stop-color="#FA7604"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sigma-colors)" d="M108 80 H404 V144 H213 L328 256 L213 368 H404 V432 H108 V378 L234 256 L108 134 Z"/>
+</svg>

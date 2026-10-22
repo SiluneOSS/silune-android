@@ -1,8 +1,8 @@
-# Silo fork daily releases
+# Σ Player daily releases
 
 The fork publishes optimized, signed phone and TV APKs on
 [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
-These are unofficial builds of the Silo Android clients, with original Silo
+These are unofficial builds of the Silo Android clients, with Σ Player
 branding and Ignore HEVC Level Limits enabled by default. The playback setting
 is an On/Off switch: On removes HEVC level bounds from capability reports, while
 Off uses the decoder's reported levels. Other compatibility checks still apply.
@@ -10,10 +10,10 @@ Existing saved numeric levels become On; a saved Off stays Off.
 
 ## Schedule and manual builds
 
-The **Silo Fork Daily** workflow runs every day at 15:37 UTC:
+The **Σ Player Daily** workflow runs every day at 15:37 UTC:
 08:37 Pacific during daylight saving time and 07:37 during standard time.
 GitHub can delay scheduled jobs. The workflow must stay on the default branch,
-`main`. It can also be started from Actions → Silo Fork Daily →
+`main`. It can also be started from Actions → Σ Player Daily →
 Run workflow, selecting `main`. Leave **Force build** unchecked to use the same
 change check, or check it to compile and publish even when nothing changed.
 
@@ -42,8 +42,8 @@ The fork workflow never invokes Play publishing or Discord posting.
 
 Each dated release includes:
 
-- `silo-phone.apk`: universal phone/tablet build.
-- `silo-tv.apk`: universal Android TV / Google TV build.
+- `sigmastreams-player-phone.apk`: universal phone/tablet build.
+- `sigmastreams-player-tv.apk`: universal Android TV / Google TV build.
 - `build-info.json`: exact source SHA, checked upstream SHA, timestamp, version
   code base, and workflow run counter.
 - `SHA256SUMS`: checksums covering both APKs and the provenance file.
@@ -51,8 +51,8 @@ Each dated release includes:
 Each successful daily build is published as a regular GitHub release and
 explicitly marked **Latest**. These permanent links follow that release:
 
-- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silo-phone.apk)
-- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silo-tv.apk)
+- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk)
+- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk)
 
 The APKs are optimized release builds. Nothing is published until signature checks pass and downloaded
 release assets match the locally calculated checksums. A failed run leaves the
@@ -84,11 +84,11 @@ An official or locally debug-signed APK uses a different signing identity and
 must be uninstalled before installing this fork; that clears the app's local data.
 Later daily builds signed with the SigmaStreams key update in place.
 
-The APK version uses Silo's version, such as `1.0.0`. The in-app version label
-and GitHub release title add the upstream build number, such as `1.0.0 (26)`.
-This branch omits the visible Sigma date suffix. The unique daily release tag
-and build provenance still record the fork build, and Android version codes
-still control update ordering.
+The APK version, in-app version label, and GitHub release title preserve Silo's
+version and build number, then append the Sigma build date:
+`1.0.0 (26) (sigma:10212026)`. The date is **MMDDYYYY in Pacific time** and is
+fixed when the workflow reserves its tag, even if compilation crosses midnight.
+Multiple builds on the same day share this visible date.
 
 The base version comes from the official Silo build tag with the highest
 repository-wide build number included in the checked upstream snapshot, such as
@@ -108,20 +108,29 @@ previously published releases are unchanged.
 
 ## Branding sources
 
-The `unbranded` branch restores the original Silo app name, launcher icons,
-wordmark, TV banner, brand notices, and logo sizing. The artwork is restored
-from the snapshot immediately before the fork's first branding commit,
-`10c474b6`, and the original `TRADEMARK.md` and resource notices apply.
-Use these branded builds after written permission is received. The daily
-workflow still targets `main`; this branch must be merged there before it
-can publish Silo-branded releases. The Silo APK download links in this
-document apply after that first publication. Restoring artwork does not make
-this fork an official Silo release.
+The app is named **Σ Player**. Accessibility descriptions and HTTP client-name
+headers use **Sigma Player** so screen readers pronounce the name clearly and
+network headers remain ASCII. The mark is an original Greek uppercase sigma,
+using Silo's blue (`#0034FB`), pink (`#F50B4F`), and orange (`#FA7604`) on the
+original deep blue icon field (`#010D9F`). It retains the upstream color scheme
+and mark-plus-name layout without incorporating Silo's logo or wordmark.
 
-The fork's playback settings, package IDs, persistent signing, daily upstream
-sync, and build-on-change release behavior remain in place. Displayed release
-names use Silo, and APK filenames are `silo-phone.apk` and `silo-tv.apk`.
-The default `main` branch uses the separate Σ Player identity.
+The editable sources are `branding/sigma-mark.svg` and
+`branding/sigma-wordmark.svg`. Regenerate the checked-in PNGs with
+`python3 scripts/generate-sigma-branding.py` (requires `rsvg-convert`, Pillow,
+and DejaVu Sans Bold). The in-app wordmark has a transparent background.
+Android's adaptive launcher insets the transparent sigma mark; the 320×180 TV
+banner centers a 170-pixel-wide wordmark inside Fire TV's square crop.
+Resource IDs and Kotlin symbol names remain stable to reduce merge conflicts.
+The original Sigma Player artwork is licensed under AGPL-3.0-or-later.
+
+APK asset filenames retain `sigmastreams-player-` so existing permanent download
+links continue to work. The repository owner and persistent signing key stay the
+same; the displayed app and release names are Σ Player.
+
+The local `unbranded` branch restores the original Silo name, artwork, notices,
+and logo sizing while retaining the fork's playback and release tooling.
+It is prepared for use after written trademark permission is received.
 
 ## Failures and maintenance
 

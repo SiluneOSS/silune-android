@@ -24,7 +24,7 @@ def build_decision(source_sha, releases, tree_for, force=False):
         raise ValueError("source commit must be a full Git SHA")
     if force:
         return True, "Manual force build requested."
-    required = {"silo-phone.apk", "silo-tv.apk",
+    required = {"sigmastreams-player-phone.apk", "sigmastreams-player-tv.apk",
                 "build-info.json", "SHA256SUMS"}
     published = [
         release for release in releases
@@ -112,10 +112,10 @@ def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None, *, up
     if not 0 < base <= 1_049_999_999:
         raise ValueError("version code is outside the Android build's allowed range")
     sigma_date = dt.date.fromisoformat(day).strftime("%m%d%Y")
-    version_name = upstream["version"]
+    version_name = f"{upstream['version']} ({upstream['build']}) (sigma:{sigma_date})"
     return {
         "tag": f"daily-{day}.{run_number}",
-        "title": f"Silo {version_name} ({upstream['build']})",
+        "title": f"Σ Player {version_name}",
         "version_name": version_name,
         "version_code_base": base,
         "build_number": upstream["build"],
@@ -150,8 +150,8 @@ def prepare():
 
 def package(root, info, out):
     sources = {
-        "silo-phone.apk": root / "androidApp/build/outputs/apk/release/androidApp-universal-release.apk",
-        "silo-tv.apk": root / "androidTvApp/build/outputs/apk/release/androidTvApp-universal-release.apk",
+        "sigmastreams-player-phone.apk": root / "androidApp/build/outputs/apk/release/androidApp-universal-release.apk",
+        "sigmastreams-player-tv.apk": root / "androidTvApp/build/outputs/apk/release/androidTvApp-universal-release.apk",
     }
     # Fail before creating a partial distribution if either app is missing.
     for path in sources.values():
@@ -166,20 +166,20 @@ def package(root, info, out):
         f"{hashlib.sha256((out / name).read_bytes()).hexdigest()}  {name}\n" for name in names))
     (out / "RELEASE_NOTES.md").write_text(
         f"{info['title']}\n\n"
-        "Unofficial, optimized release builds of Silo, a fork of the Silo Android clients. "
-        "Includes Ignore HEVC Level Limits enabled by default.\n\n"
+        "Unofficial, optimized release builds of Σ Player, a fork of the Silo Android clients. "
+        "Includes the fork's HEVC level override, defaulting to 6.2.\n\n"
         f"Version: **{info['version_name']}**. Based on Silo `{info['upstream_version_tag']}` "
         "plus the upstream changes included in the source snapshot below. "
-        "The daily release tag uses Pacific time.\n\n"
-        "- `silo-phone.apk`: Android phones and tablets.\n"
-        "- `silo-tv.apk`: Android TV / Google TV.\n"
+        "The Sigma date uses Pacific time (MMDDYYYY).\n\n"
+        "- `sigmastreams-player-phone.apk`: Android phones and tablets.\n"
+        "- `sigmastreams-player-tv.apk`: Android TV / Google TV.\n"
         "- Both APKs are universal and signed with the persistent SigmaStreams key.\n"
         "- These are optimized release APKs, published as regular GitHub releases.\n"
-        "- Latest phone APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/silo-phone.apk\n"
-        "- Latest TV APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/silo-tv.apk\n\n"
+        "- Latest phone APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk\n"
+        "- Latest TV APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk\n\n"
         "The initial switch from an official or locally debug-signed app requires an uninstall because "
         "the signing keys differ; uninstalling clears the app's local data. "
-        "Later fork builds can update in place.\n\n"
+        "Later SigmaStreams builds can update in place.\n\n"
         f"Source: https://github.com/SigmaStreams/silo-android/tree/{info['source_sha']}\n\n"
         f"Upstream checked: https://github.com/Silo-Server/silo-android/commit/{info['upstream_checked_sha']}\n\n"
         "Verify downloads with `sha256sum --check SHA256SUMS`. "
