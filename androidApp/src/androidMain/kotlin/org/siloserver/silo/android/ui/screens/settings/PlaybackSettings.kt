@@ -322,7 +322,7 @@ fun PlaybackEpisodesSection(
 // HEVC level override, normalized as level x 30 (0 = report the decoder's own).
 private val hevcLevelOverrideOptions = listOf(0, 150, 153, 156, 180, 183, 186)
 private fun hevcLevelOverrideLabel(level: Int) =
-    if (level <= 0) "Auto" else "Level %d.%d".format(level / 30, (level % 30) / 3)
+    if (level <= 0) "Off" else "Level %d.%d".format(level / 30, (level % 30) / 3)
 
 /**
  * Playback → Decoder: the HEVC level this device reports to the server. See
@@ -338,7 +338,7 @@ fun PlaybackDecoderSection(
         title = "Decoder",
         footer = "HEVC Level Override reports a higher HEVC level than this device's decoder advertises, " +
             "so the server direct plays files tagged above it (such as level 6.2) instead of transcoding " +
-            "them. Files that truly exceed the decoder may stutter or fail.",
+            "them. Off uses the decoder's reported limit. Files that truly exceed the decoder may stutter or fail.",
         modifier = modifier,
     ) {
         SettingsDropdownRow(

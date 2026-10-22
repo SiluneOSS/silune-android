@@ -1337,7 +1337,8 @@ private fun TvPlaybackSettingsPane(
                         "source format. Unsupported formats may produce a black screen or incorrect colors." +
                         " HEVC Level Override reports a higher HEVC level than this device's decoder " +
                         "advertises, so the server direct plays files tagged above it (such as level 6.2) " +
-                        "instead of transcoding them. Files that truly exceed the decoder may stutter or fail." +
+                        "instead of transcoding them. Off uses the decoder's reported limit. " +
+                        "Files that truly exceed the decoder may stutter or fail." +
                         " True Black Bars stops Silo from drawing the bars around the picture during " +
                         "playback. Try it if they look grey in HDR or Dolby Vision, and turn it off again " +
                         "if they get lighter or show a thin line.",
@@ -3034,7 +3035,7 @@ private val NextUpPromptOptions = listOf(0, 10, 30, 60, 120)
 private val HevcLevelOverrideOptions = listOf(0, 150, 153, 156, 180, 183, 186)
 
 private fun hevcLevelOverrideLabel(level: Int): String =
-    if (level <= 0) "Auto" else "Level %d.%d".format(level / 30, (level % 30) / 3)
+    if (level <= 0) "Off" else "Level %d.%d".format(level / 30, (level % 30) / 3)
 
 private fun resumeRewindLabel(seconds: Int): String =
     if (seconds <= 0) "Off" else "${seconds}s"

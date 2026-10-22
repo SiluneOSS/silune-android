@@ -163,7 +163,7 @@ object PlaybackSettingsKeys {
     /**
      * Local-only per-profile setting: the highest HEVC level this device
      * reports to the server, in the probe's normalized form (level x 30, so
-     * 153 = 5.1, 186 = 6.2). Defaults to 6.2; an explicit 0 (Auto) reports
+     * 153 = 5.1, 186 = 6.2). Defaults to 6.2; an explicit 0 (Off) reports
      * what the decoder advertises.
      *
      * Many files are tagged with a higher level than their real bitrate and
@@ -171,7 +171,7 @@ object PlaybackSettingsKeys {
      * them anyway. Without an override the server refuses them and
      * transcodes. Like Plex's "ignore level" option, this overrides the
      * advertised limit: a stream that truly exceeds the decoder can stutter
-     * or fail. Users can select Auto to restore the decoder's own levels.
+     * or fail. Users can select Off to restore the decoder's own levels.
      * A device fact, not a server playback preference, so it never enters
      * [DeviceSettings].
      */
