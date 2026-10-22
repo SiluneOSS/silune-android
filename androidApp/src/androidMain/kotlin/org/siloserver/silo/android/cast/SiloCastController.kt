@@ -892,7 +892,7 @@ class SiloCastController(
         replaceConsent: SiloCastReplaceConsent?,
     ) {
         val version = awaitHandoffStep(VERSION_TIMEOUT_MS, "The TV did not respond.") { negotiatedVersion.await() }
-        require(version == SiloCastProtocol.version) { "Update Silo on both devices to use Remote Control." }
+        require(version == SiloCastProtocol.version) { "Update the app on both devices to use Remote Control." }
 
         val server = serverRegistry.activeEntry.value
             ?: error("Choose a server before controlling a TV.")

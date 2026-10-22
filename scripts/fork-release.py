@@ -24,7 +24,7 @@ def build_decision(source_sha, releases, tree_for, force=False):
         raise ValueError("source commit must be a full Git SHA")
     if force:
         return True, "Manual force build requested."
-    required = {"sigmastreams-player-phone.apk", "sigmastreams-player-tv.apk",
+    required = {"prism-phone.apk", "prism-tv.apk",
                 "build-info.json", "SHA256SUMS"}
     published = [
         release for release in releases
@@ -111,17 +111,17 @@ def metadata(now, run_number, source_sha, upstream_sha, reserved_tag=None, *, up
     base = 400_000_000 + int((now - dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)).total_seconds())
     if not 0 < base <= 1_049_999_999:
         raise ValueError("version code is outside the Android build's allowed range")
-    sigma_date = dt.date.fromisoformat(day).strftime("%m%d%Y")
-    version_name = f"{upstream['version']} ({upstream['build']}) (sigma:{sigma_date})"
+    prism_date = dt.date.fromisoformat(day).strftime("%m%d%Y")
+    version_name = f"{upstream['version']} ({upstream['build']}) (prism:{prism_date})"
     return {
         "tag": f"daily-{day}.{run_number}",
-        "title": f"Σ Player {version_name}",
+        "title": f"Prism {version_name}",
         "version_name": version_name,
         "version_code_base": base,
         "build_number": upstream["build"],
         "upstream_version": upstream["version"],
         "upstream_version_tag": upstream["tag"],
-        "sigma_date": sigma_date,
+        "prism_date": prism_date,
         "run_number": run_number,
         "source_sha": source_sha,
         "upstream_checked_sha": upstream_sha,
@@ -150,8 +150,8 @@ def prepare():
 
 def package(root, info, out):
     sources = {
-        "sigmastreams-player-phone.apk": root / "androidApp/build/outputs/apk/release/androidApp-universal-release.apk",
-        "sigmastreams-player-tv.apk": root / "androidTvApp/build/outputs/apk/release/androidTvApp-universal-release.apk",
+        "prism-phone.apk": root / "androidApp/build/outputs/apk/release/androidApp-universal-release.apk",
+        "prism-tv.apk": root / "androidTvApp/build/outputs/apk/release/androidTvApp-universal-release.apk",
     }
     # Fail before creating a partial distribution if either app is missing.
     for path in sources.values():
@@ -166,17 +166,17 @@ def package(root, info, out):
         f"{hashlib.sha256((out / name).read_bytes()).hexdigest()}  {name}\n" for name in names))
     (out / "RELEASE_NOTES.md").write_text(
         f"{info['title']}\n\n"
-        "Unofficial, optimized release builds of Σ Player, a fork of the Silo Android clients. "
+        "Unofficial, optimized release builds of Prism, a fork of the Silo Android clients. "
         "Includes the fork's HEVC level override, defaulting to 6.2.\n\n"
         f"Version: **{info['version_name']}**. Based on Silo `{info['upstream_version_tag']}` "
         "plus the upstream changes included in the source snapshot below. "
-        "The Sigma date uses Pacific time (MMDDYYYY).\n\n"
-        "- `sigmastreams-player-phone.apk`: Android phones and tablets.\n"
-        "- `sigmastreams-player-tv.apk`: Android TV / Google TV.\n"
+        "The Prism date uses Pacific time (MMDDYYYY).\n\n"
+        "- `prism-phone.apk`: Android phones and tablets.\n"
+        "- `prism-tv.apk`: Android TV / Google TV.\n"
         "- Both APKs are universal and signed with the persistent SigmaStreams key.\n"
         "- These are optimized release APKs, published as regular GitHub releases.\n"
-        "- Latest phone APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk\n"
-        "- Latest TV APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk\n\n"
+        "- Latest phone APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-phone.apk\n"
+        "- Latest TV APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-tv.apk\n\n"
         "The initial switch from an official or locally debug-signed app requires an uninstall because "
         "the signing keys differ; uninstalling clears the app's local data. "
         "Later SigmaStreams builds can update in place.\n\n"

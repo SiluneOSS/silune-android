@@ -48,12 +48,12 @@ class AndroidDeviceMetadataProvider(
         )
     }
 
-    // HTTP client-name headers must stay ASCII; the displayed app name uses Σ.
+    // Keep HTTP client-name headers consistent with the displayed Prism name.
     private fun clientNameFor(platform: String): String =
         when (platform) {
-            "android-tv" -> "Sigma Player TV"
-            "android" -> "Sigma Player"
-            else -> "Sigma Player"
+            "android-tv" -> "Prism TV"
+            "android" -> "Prism"
+            else -> "Prism"
         }
 
     /**

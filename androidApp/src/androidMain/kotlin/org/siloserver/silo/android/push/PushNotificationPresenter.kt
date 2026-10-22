@@ -191,7 +191,7 @@ class PushNotificationPresenter internal constructor(
                 // Deliberately does not promise this specific event is visible
                 // under the active identity — it may not be ours to show.
                 body = fallbackBody?.takeIf { it.isNotBlank() }
-                    ?: "Open Σ Player to check notifications.",
+                    ?: "Open Prism to check notifications.",
                 route = Route.Inbox.route,
             )
         }
@@ -206,7 +206,7 @@ class PushNotificationPresenter internal constructor(
                 body = listOfNotNull(
                     episodeTag,
                     row.episodeTitle.ifBlank { null },
-                ).joinToString(" - ").ifBlank { "Open Σ Player to watch." },
+                ).joinToString(" - ").ifBlank { "Open Prism to watch." },
                 route = route,
             )
             NotificationType.RequestFulfilled -> PushNotificationContent(
@@ -225,7 +225,7 @@ class PushNotificationPresenter internal constructor(
                 body = fallbackBody?.takeIf { it.isNotBlank() }
                     ?: row.episodeTitle.ifBlank { null }
                     ?: row.seriesTitle.ifBlank { null }
-                    ?: "Open Σ Player to view it.",
+                    ?: "Open Prism to view it.",
                 route = route,
             )
         }

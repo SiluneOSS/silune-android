@@ -1,8 +1,8 @@
-> **Σ Player fork:** unofficial Android phone and TV clients, with
-> an original sigma mark in Silo’s color palette and Ignore HEVC Level Limits enabled by default.
+> **Prism fork:** unofficial Android phone and TV clients, with
+> a purple prism logo and Ignore HEVC Level Limits enabled by default.
 > Upstream syncs daily; changed source produces signed APKs in [Releases](https://github.com/SigmaStreams/silo-android/releases).
-> Permanent downloads: [phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-phone.apk)
-> · [TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/sigmastreams-player-tv.apk).
+> Permanent downloads: [phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-phone.apk)
+> · [TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-tv.apk).
 > See [fork releases](docs/fork-releases.md) for the daily upstream merge, signing,
 > verification, and recovery workflow. The upstream project documentation follows.
 
