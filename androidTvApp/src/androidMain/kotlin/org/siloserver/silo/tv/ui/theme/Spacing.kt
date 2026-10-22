@@ -84,16 +84,12 @@ object TvSkyline {
     val barTrailingSpacing = 11.dp
 
     /**
-     * Rendered height of the Silo brand lockup at the bar's leading edge.
+     * Rendered height of the Silune brand lockup at the bar's leading edge.
      *
-     * The artwork is `silo-wordmark-white.svg` as silo-branding's `derive.py`
-     * renders it for Android (`res/drawable/silo_wordmark.png`, 764x400). Branding
-     * requires clear space on every side of at least one bar counter — 54 of the
-     * mark's 266 units, i.e. 6.32% of the lockup's own height. 24.dp is the
-     * largest round height that keeps that clear space inside the 32.dp
-     * [barHeight] row with real margin (4.1dp actual against a 1.5dp minimum),
-     * and it draws the mark 48px tall on a 320dpi TV panel — twice branding's
-     * 24px legibility floor. Width follows the drawable's intrinsic ratio.
+     * `scripts/generate-silune-branding.py` renders the 1200x400 transparent
+     * wordmark into `res/drawable/silo_wordmark.png`. Keep the lockup inside
+     * the 32.dp [barHeight] row with space above and below; width follows the
+     * drawable's intrinsic ratio.
      */
     val wordmarkHeight = 24.dp
 

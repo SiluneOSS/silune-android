@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Render the Prism SVGs. Requires rsvg-convert and Pillow.
+"""Render the Silune SVGs. Requires rsvg-convert and Pillow.
 
-The wordmark uses DejaVu Sans Bold; install that font before regenerating.
-Run from any directory with: python3 scripts/generate-prism-branding.py
+The wordmark contains outlined DejaVu Sans Bold lettering; no font install is needed.
+Run from any directory with: python3 scripts/generate-silune-branding.py
 """
 
 from io import BytesIO
@@ -12,7 +12,7 @@ import subprocess
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-BACKGROUND = "#25252D"
+BACKGROUND = "#0C1428"
 
 
 def render(name, width, height):
@@ -23,11 +23,12 @@ def render(name, width, height):
 
 
 def generate():
-    foreground = render("prism-mark.svg", 512, 512)
+    foreground = render("silune-mark.svg", 512, 512)
     icon = Image.new("RGB", (512, 512), BACKGROUND)
     icon.paste(foreground, (0, 0), foreground)
-    wordmark = render("prism-wordmark.svg", 1200, 400)
-    banner_wordmark = render("prism-wordmark.svg", 170, 57)
+    icon.save(ROOT / "assets/icon.png", optimize=True)
+    wordmark = render("silune-wordmark.svg", 1200, 400)
+    banner_wordmark = render("silune-wordmark.svg", 170, 57)
     banner = Image.new("RGB", (320, 180), BACKGROUND)
     banner.paste(banner_wordmark, (75, 61), banner_wordmark)
     for module in ("androidApp", "androidTvApp"):

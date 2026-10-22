@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Prism</string>
+    <string name="app_name">Silune</string>
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
@@ -38,7 +38,7 @@
     <string name="tv_signin_step_scan">Scan with your phone\'s camera</string>
     <string name="tv_signin_step_url">Or go to %1$s and enter the code</string>
     <string name="tv_signin_step_approve">Approve on your phone. This TV signs in by itself.</string>
-    <string name="tv_signin_nearby_hint">Have Prism on your phone? Open it on the same Wi‑Fi to sign in this TV.</string>
+    <string name="tv_signin_nearby_hint">Have Silune on your phone? Open it on the same Wi‑Fi to sign in this TV.</string>
     <string name="tv_signin_session_expired">You were signed out of %1$s. Sign in again.</string>
     <string name="tv_signin_code_label">Sign-in code</string>
     <string name="tv_signin_qr_description">Sign-in QR code. Or go to %1$s slash activate and enter %2$s.</string>
@@ -114,7 +114,7 @@
     <string name="tv_signin_error_network_identity_required">Open this server at its %1$s address to sign in this way.</string>
     <string name="tv_signin_error_network_not_permitted">%1$s doesn\'t allow this device to sign in to this server.</string>
     <!-- The TV has no Sign-in settings: the phone app and the web app do. -->
-    <string name="tv_signin_error_network_email_in_use">An account with your email already exists. Sign in to it with Prism on your phone or Silo on the web, connect %1$s in Sign-in settings, then try again.</string>
+    <string name="tv_signin_error_network_email_in_use">An account with your email already exists. Sign in to it with Silune on your phone or Silo on the web, connect %1$s in Sign-in settings, then try again.</string>
     <string name="tv_signin_error_network_provider_gone">%1$s is no longer available on this server.</string>
 
     <!-- Nearby phone setup and sign-in, shown on server setup and on the
@@ -168,7 +168,7 @@
     <string name="tv_setup_subtitle">Use your phone or tablet, or enter the server address with the remote.</string>
     <string name="tv_setup_phone_pill">RECOMMENDED · USE YOUR PHONE</string>
     <string name="tv_setup_phone_looking">Looking for a phone or tablet…</string>
-    <string name="tv_setup_phone_detail">Open Prism on a phone or tablet on the same Wi‑Fi. Accept the setup card and Prism will securely bring over the server and account.</string>
+    <string name="tv_setup_phone_detail">Open Silune on a phone or tablet on the same Wi‑Fi. Accept the setup card and Silune will securely bring over the server and account.</string>
     <string name="marker_skip_recap">Skip Recap</string>
     <string name="marker_skip_credits">Skip Credits</string>
 </resources>

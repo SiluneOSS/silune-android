@@ -105,7 +105,7 @@ fun MarqueeStage(
 fun MarqueeWordmark(width: Dp = 150.dp) {
     Image(
         painter = painterResource(R.drawable.silo_wordmark),
-        contentDescription = "Prism",
+        contentDescription = "Silune",
         contentScale = ContentScale.Fit,
         modifier = Modifier.width(width),
     )

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <title>Prism mark</title>
-  <g transform="translate(24 0)">
-    <path fill="#5736B4" d="M130 50 L80 129 V450 L178 329 V163 Z"/>
-    <path fill="#B59AF4" d="M130 50 L432 217 L324 246 L178 163 Z"/>
-    <path fill="#6856A3" d="M80 450 L382 294 L432 217 L324 246 L178 329 Z"/>
-  </g>
-</svg>

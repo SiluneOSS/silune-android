@@ -31,11 +31,11 @@ class TvLauncherIconAssetsTest {
         assertEquals(0, foreground.alphaAt(foreground.width - 1, foreground.height / 2), "Right edge should be transparent.")
         val adaptiveIcon = File("src/androidMain/res/mipmap-anydpi-v26/ic_launcher.xml").readText()
         assertTrue(adaptiveIcon.contains("android:inset=\"18dp\""),
-            "The prism mark must be inset into the adaptive icon safe zone.")
+            "The Silune mark must be inset into the adaptive icon safe zone.")
         val bounds = foreground.opaqueBounds()
         assertTrue(bounds.minX > 0 && bounds.maxX < foreground.width - 1)
         assertTrue(bounds.minY > 0 && bounds.maxY < foreground.height - 1)
-        assertTrue(bounds.width > 100 && bounds.height > 100, "Prism mark must be visible: $bounds")
+        assertTrue(bounds.width > 100 && bounds.height > 100, "Silune mark must be visible: $bounds")
 
     }
 
@@ -54,13 +54,13 @@ class TvLauncherIconAssetsTest {
     }
 
     @Test
-    fun legacyTvLauncherIconContainsCenteredColorPrismMark() {
+    fun legacyTvLauncherIconContainsCenteredSilverCrescentMark() {
         val icon = ImageIO.read(File("src/androidMain/res/mipmap-nodpi/ic_launcher.png"))
         val accentPixels = buildList {
             for (y in 0 until icon.height) {
                 for (x in 0 until icon.width) {
                     val rgb = icon.getRGB(x, y)
-                    if (rgb.blue() > 140 && rgb.blue() > rgb.red() * 1.2 && rgb.blue() > rgb.green() * 1.2) {
+                    if (rgb.isMoonlightSilver()) {
                         add(x to y)
                     }
                 }
@@ -74,17 +74,16 @@ class TvLauncherIconAssetsTest {
             "Brand accent must remain centered: $averageX",
         )
 
-        var nearWhitePixels = 0
+        val foreground = ImageIO.read(File("src/androidMain/res/mipmap-nodpi/ic_launcher_foreground.png"))
         for (y in 0 until icon.height) {
             for (x in 0 until icon.width) {
                 val rgb = icon.getRGB(x, y)
-                if (rgb.red() > 230 && rgb.green() > 230 && rgb.blue() > 230) nearWhitePixels++
+                if (foreground.alphaAt(x, y) == 0) {
+                    assertEquals(0x0C1428, rgb and 0xffffff,
+                        "Outside the mark, the icon must contain only midnight blue at ($x, $y).")
+                }
             }
         }
-        assertTrue(
-            nearWhitePixels < icon.width * icon.height / 50,
-            "Square launcher icon must not bake in the white banner wordmark: $nearWhitePixels pixels",
-        )
     }
 
     @Test
@@ -98,46 +97,46 @@ class TvLauncherIconAssetsTest {
             for (y in 0 until banner.height) {
                 for (x in 0 until banner.width) {
                     val rgb = banner.getRGB(x, y)
-                    if (rgb.red() > 230 && rgb.green() > 230 && rgb.blue() > 230) {
+                    if (x >= 132 && rgb.red() > 230 && rgb.green() > 230 && rgb.blue() > 230) {
                         add(x to y)
                     }
                 }
             }
         }
-        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the white Prism wordmark.")
+        assertTrue(wordmarkPixels.size > 500, "TV banner must retain the silver Silune wordmark.")
         val wordmarkBounds = wordmarkPixels.pixelBounds()
         assertTrue(
             wordmarkBounds.minX >= 70 && wordmarkBounds.maxX <= 249,
-            "White wordmark must remain inside Fire TV's centered square crop: $wordmarkBounds",
+            "Silver wordmark must remain inside Fire TV's centered square crop: $wordmarkBounds",
         )
         assertTrue(
             wordmarkBounds.width in 40..180 && wordmarkBounds.height in 10..90,
-            "White wordmark must retain a complete, readable shape: $wordmarkBounds",
+            "Silver wordmark must retain a complete, readable shape: $wordmarkBounds",
         )
         assertTrue(
             wordmarkBounds.width * wordmarkBounds.height >= 500,
-            "White wordmark bounds must not collapse to a small or fragmented mark: $wordmarkBounds",
+            "Silver wordmark bounds must not collapse to a small or fragmented mark: $wordmarkBounds",
         )
     }
 
     @Test
-    fun tvBannerKeepsColorMarkInsideTheFireTvSquareSafeArea() {
+    fun tvBannerKeepsSilverMarkInsideTheFireTvSquareSafeArea() {
         val banner = ImageIO.read(File("src/androidMain/res/drawable/tv_banner.png"))
         val accentPixels = buildList {
             for (y in 0 until banner.height) {
                 for (x in 0 until banner.width) {
                     val rgb = banner.getRGB(x, y)
-                    if (rgb.blue() > 140 && rgb.blue() > rgb.red() * 1.2 && rgb.blue() > rgb.green() * 1.2) {
+                    if (x < 132 && rgb.isMoonlightSilver()) {
                         add(x to y)
                     }
                 }
             }
         }
 
-        assertTrue(accentPixels.size > 100, "TV banner must retain the colorful Prism mark.")
+        assertTrue(accentPixels.size > 100, "TV banner must retain the silver crescent S mark.")
         val minX = accentPixels.minOf { it.first }
         val maxX = accentPixels.maxOf { it.first }
-        assertTrue(minX >= 70 && maxX <= 250, "Color mark must fit inside Fire TV's centered square crop.")
+        assertTrue(minX >= 70 && maxX <= 250, "Silver mark must fit inside Fire TV's centered square crop.")
     }
 }
 
@@ -147,6 +146,9 @@ private fun java.awt.image.BufferedImage.alphaAt(x: Int, y: Int): Int =
     } else {
         255
     }
+
+private fun Int.isMoonlightSilver(): Boolean =
+    red() > 140 && green() >= red() && blue() >= green() && blue() - red() < 90
 
 private fun Int.red(): Int = (this ushr 16) and 0xff
 

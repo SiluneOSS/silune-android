@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Silune mark</title>
+  <desc>Two crescent curves form a silver S.</desc>
+  <defs>
+    <linearGradient id="moonlight" x1="160" y1="80" x2="350" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1F5FC"/>
+      <stop offset="0.5" stop-color="#CDD8EB"/>
+      <stop offset="1" stop-color="#91A7CC"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#moonlight)" transform="translate(-12 0)" d="M355 114 C315 72 249 60 195 90 C141 119 121 172 146 218 C168 258 218 268 263 279 C309 290 337 310 330 339 C322 375 270 396 223 377 C244 411 299 423 341 399 C394 368 411 310 383 265 C360 228 311 216 268 204 C225 193 198 177 206 149 C214 122 253 107 289 111 C319 115 342 129 355 114 Z"/>
+</svg>

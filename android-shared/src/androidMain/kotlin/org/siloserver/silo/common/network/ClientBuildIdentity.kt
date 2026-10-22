@@ -27,7 +27,7 @@ fun clientVersionLabel(version: String, rawBuildNumber: String?): String =
         ?.let { build ->
             // Fork APK version names already include the upstream build before
             // the fork date. Keep Settings consistent with Android's label.
-            val forkLabel = Regex(""" \(${Regex.escape(build)}\) \((?:prism|sigma):[0-9]{8}\)$""")
+            val forkLabel = Regex(""" \(${Regex.escape(build)}\) \((?:silune|prism|sigma):[0-9]{8}\)$""")
             if (forkLabel.containsMatchIn(version)) version else "$version ($build)"
         }
         ?: version

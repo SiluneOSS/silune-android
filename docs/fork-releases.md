@@ -1,8 +1,8 @@
-# Prism daily releases
+# Silune daily releases
 
 The fork publishes optimized, signed phone and TV APKs on
 [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
-These are unofficial builds of the Silo Android clients, with Prism
+These are unofficial builds of the Silo Android clients, with Silune
 branding and Ignore HEVC Level Limits enabled by default. The playback setting
 is an On/Off switch: On removes HEVC level bounds from capability reports, while
 Off uses the decoder's reported levels. Other compatibility checks still apply.
@@ -10,10 +10,10 @@ Existing saved numeric levels become On; a saved Off stays Off.
 
 ## Schedule and manual builds
 
-The **Prism Daily** workflow runs every day at 15:37 UTC:
+The **Silune Daily** workflow runs every day at 15:37 UTC:
 08:37 Pacific during daylight saving time and 07:37 during standard time.
 GitHub can delay scheduled jobs. The workflow must stay on the default branch,
-`main`. It can also be started from Actions → Prism Daily →
+`main`. It can also be started from Actions → Silune Daily →
 Run workflow, selecting `main`. Leave **Force build** unchecked to use the same
 change check, or check it to compile and publish even when nothing changed.
 
@@ -42,8 +42,8 @@ The fork workflow never invokes Play publishing or Discord posting.
 
 Each dated release includes:
 
-- `prism-phone.apk`: universal phone/tablet build.
-- `prism-tv.apk`: universal Android TV / Google TV build.
+- `silune-phone.apk`: universal phone/tablet build.
+- `silune-tv.apk`: universal Android TV / Google TV build.
 - `build-info.json`: exact source SHA, checked upstream SHA, timestamp, version
   code base, and workflow run counter.
 - `SHA256SUMS`: checksums covering both APKs and the provenance file.
@@ -51,8 +51,8 @@ Each dated release includes:
 Each successful daily build is published as a regular GitHub release and
 explicitly marked **Latest**. These permanent links follow that release:
 
-- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-phone.apk)
-- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/prism-tv.apk)
+- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-phone.apk)
+- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-tv.apk)
 
 The APKs are optimized release builds. Nothing is published until signature checks pass and downloaded
 release assets match the locally calculated checksums. A failed run leaves the
@@ -85,8 +85,8 @@ must be uninstalled before installing this fork; that clears the app's local dat
 Later daily builds signed with the SigmaStreams key update in place.
 
 The APK version, in-app version label, and GitHub release title preserve Silo's
-version and build number, then append the Prism build date:
-`1.0.0 (26) (prism:10212026)`. The date is **MMDDYYYY in Pacific time** and is
+version and build number, then append the Silune build date:
+`1.0.0 (26) (silune:10212026)`. The date is **MMDDYYYY in Pacific time** and is
 fixed when the workflow reserves its tag, even if compilation crosses midnight.
 Multiple builds on the same day share this visible date.
 
@@ -108,25 +108,27 @@ previously published releases are unchanged.
 
 ## Branding sources
 
-The app, accessibility descriptions, and HTTP client-name headers use **Prism**
-(**Prism TV** for TV client headers). The purple mark has three facets around a
-play triangle, on a charcoal (`#25252D`) launcher background.
+The app, accessibility descriptions, and HTTP client-name headers use **Silune**
+(**Silune TV** for TV client headers). Two crescent curves form a silver S,
+on a midnight-blue (`#0C1428`) launcher background. The wordmark uses a soft
+silver (`#F1F5FC`); the brand line is "Your media, after dark."
 
-The editable sources are `branding/prism-mark.svg` and
-`branding/prism-wordmark.svg`. Regenerate the checked-in PNGs with
-`python3 scripts/generate-prism-branding.py` (requires `rsvg-convert`, Pillow,
-and DejaVu Sans Bold). The in-app wordmark has a transparent background.
-Android's adaptive launcher insets the transparent prism mark; the 320×180 TV
+The editable sources are `branding/silune-mark.svg` and
+`branding/silune-wordmark.svg`. Regenerate the checked-in PNGs with
+`python3 scripts/generate-silune-branding.py` (requires `rsvg-convert` and Pillow).
+The DejaVu Sans Bold lettering is outlined for consistent rendering.
+The in-app wordmark has a transparent background.
+Android's adaptive launcher insets the transparent crescent S mark; the 320×180 TV
 banner centers a 170-pixel-wide wordmark inside Fire TV's square crop.
 Resource IDs and Kotlin symbol names remain stable to reduce merge conflicts.
-The Prism artwork is licensed under AGPL-3.0-or-later.
+The Silune artwork is licensed under AGPL-3.0-or-later.
 
-New releases use `prism-phone.apk` and `prism-tv.apk`. Permanent download URLs
-use those filenames once a Prism release is published. Previously published
-releases retain their original asset names; existing links using the former
-filenames will not follow new Prism releases. The repository owner, application
-IDs, and persistent signing key stay the same, so existing fork installs can
-update in place with the matching phone or TV build.
+New releases use `silune-phone.apk` and `silune-tv.apk`. Permanent download URLs
+use those filenames once a Silune release is published. Previously published
+releases retain their original asset names; existing links using `prism-*`
+or earlier filenames will not follow new Silune releases. The repository owner,
+application IDs, and persistent signing key stay the same, so existing fork
+installs can update in place with the matching phone or TV build.
 
 The local `unbranded` branch restores the original Silo name, artwork, notices,
 and logo sizing while retaining the fork's playback and release tooling.

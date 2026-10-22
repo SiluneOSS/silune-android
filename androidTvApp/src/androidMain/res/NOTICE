@@ -1,12 +1,12 @@
-Prism brand assets
-==================
+Silune brand assets
+===================
 
-The launcher icons, wordmark, and TV banner use a purple, faceted play mark
-on a charcoal icon field. They do not incorporate the Silo logo or wordmark.
-SVG sources are in branding/; scripts/generate-prism-branding.py renders the
-Android copies.
+The launcher icons, wordmark, and TV banner use a silver crescent S
+on a midnight-blue (#0C1428) icon field. They do not incorporate the Silo
+logo or wordmark. SVG sources are in branding/;
+scripts/generate-silune-branding.py renders the Android copies.
 
-These Prism assets are licensed under AGPL-3.0-or-later, like the
+These Silune assets are licensed under AGPL-3.0-or-later, like the
 application's source code.
 
 The original Silo project's trademarks remain the property of Silo Media

@@ -653,7 +653,7 @@ private fun SettingsRail(
             onFocused = { railActionHasFocus = true },
         )
         Text(
-            text = "Prism ${clientVersionLabel(BuildConfig.VERSION_NAME, BuildConfig.BUILD_NUMBER)}",
+            text = "Silune ${clientVersionLabel(BuildConfig.VERSION_NAME, BuildConfig.BUILD_NUMBER)}",
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp, lineHeight = 18.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             modifier = Modifier.padding(start = 12.dp, top = 6.dp),
@@ -1339,7 +1339,7 @@ private fun TvPlaybackSettingsPane(
                         "exceeds the decoder's reported limit. Other compatibility checks still apply. " +
                         "Turn it off to use the decoder's reported levels. Files that exceed the " +
                         "decoder's actual capabilities may stutter or fail." +
-                        " True Black Bars stops Prism from drawing the bars around the picture during " +
+                        " True Black Bars stops Silune from drawing the bars around the picture during " +
                         "playback. Try it if they look grey in HDR or Dolby Vision, and turn it off again " +
                         "if they get lighter or show a thin line.",
                 )
@@ -1403,7 +1403,7 @@ private fun TvPlaybackSettingsPane(
                 )
                 SettingsFooterText(
                     text = "Rewind on Resume skips back when you return to a partly watched title. Still " +
-                        "Watching Prompt sets how many episodes play in a row before Prism asks whether " +
+                        "Watching Prompt sets how many episodes play in a row before Silune asks whether " +
                         "you're still watching.",
                 )
             }
@@ -1885,7 +1885,7 @@ private fun TvSubtitleSettingsPane(
                         onClick = { activePicker = SubtitlePicker.MetadataLanguage },
                     )
                     SettingsFooterText(
-                        text = "Fallback language Prism prefers for titles, descriptions, and artwork.",
+                        text = "Fallback language Silune prefers for titles, descriptions, and artwork.",
                     )
                 }
             }

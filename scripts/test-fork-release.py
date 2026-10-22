@@ -26,8 +26,8 @@ class ForkReleaseTest(unittest.TestCase):
         first = self.info()
         later = self.info(dt.datetime(2026, 10, 22, 2, tzinfo=dt.timezone.utc), run=2)
         self.assertEqual(first["tag"], "daily-2026-10-21.1")
-        self.assertEqual(first["version_name"], "1.0.0 (26) (prism:10212026)")
-        self.assertEqual(first["title"], "Prism 1.0.0 (26) (prism:10212026)")
+        self.assertEqual(first["version_name"], "1.0.0 (26) (silune:10212026)")
+        self.assertEqual(first["title"], "Silune 1.0.0 (26) (silune:10212026)")
         self.assertEqual(first["upstream_version_tag"], "v1.0.0-beta.26")
         self.assertGreater(later["version_code_base"], first["version_code_base"])
         self.assertLess(first["version_code_base"] * 2 + 1, 2_100_000_000)
@@ -49,7 +49,7 @@ class ForkReleaseTest(unittest.TestCase):
         now = dt.datetime(2026, 10, 23, 8, tzinfo=dt.timezone.utc)
         info = release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.7", upstream=UPSTREAM)
         self.assertEqual(info["tag"], "daily-2026-10-22.7")
-        self.assertEqual(info["version_name"], "1.0.0 (26) (prism:10222026)")
+        self.assertEqual(info["version_name"], "1.0.0 (26) (silune:10222026)")
         with self.assertRaises(ValueError):
             release.metadata(now, 7, "a" * 40, "b" * 40, "daily-2026-10-22.8", upstream=UPSTREAM)
 
@@ -87,7 +87,7 @@ class ForkReleaseTest(unittest.TestCase):
                        RUNNER_TEMP=tmp, GITHUB_ENV=str(root / "env"), GITHUB_OUTPUT=str(root / "outputs"))
             subprocess.run(["python3", str(Path(release.__file__).resolve()), "prepare"],
                            cwd=root, env=env, check=True, capture_output=True, text=True)
-            self.assertIn("SILO_VERSION_NAME=1.0.0 (26) (prism:10212026)\n", (root / "env").read_text())
+            self.assertIn("SILO_VERSION_NAME=1.0.0 (26) (silune:10212026)\n", (root / "env").read_text())
             self.assertIn("SILO_BUILD_NUMBER=26\n", (root / "env").read_text())
             info = json.loads((root / "fork-build-info.json").read_text())
             self.assertEqual(info["upstream_version_tag"], "v1.0.0-beta.26")
@@ -118,7 +118,7 @@ class ForkReleaseTest(unittest.TestCase):
             out = root / "dist"
             release.package(root, self.info(), out)
             self.assertEqual({path.name for path in out.iterdir()}, {
-                "prism-phone.apk", "prism-tv.apk", "build-info.json", "SHA256SUMS", "RELEASE_NOTES.md",
+                "silune-phone.apk", "silune-tv.apk", "build-info.json", "SHA256SUMS", "RELEASE_NOTES.md",
             })
             self.assertEqual(json.loads((out / "build-info.json").read_text())["source_sha"], "a" * 40)
             for line in (out / "SHA256SUMS").read_text().splitlines():
@@ -136,7 +136,7 @@ class BuildDecisionTest(unittest.TestCase):
             "tag_name": self.tag, "draft": False, "prerelease": False,
             "published_at": "2026-10-21T23:00:00Z",
             "assets": [{"name": name, "size": 1} for name in [
-                "prism-phone.apk", "prism-tv.apk",
+                "silune-phone.apk", "silune-tv.apk",
                 "build-info.json", "SHA256SUMS"]],
         }
         return dict(result, **changes)
