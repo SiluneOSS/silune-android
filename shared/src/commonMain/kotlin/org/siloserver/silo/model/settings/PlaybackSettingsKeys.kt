@@ -161,17 +161,19 @@ object PlaybackSettingsKeys {
     const val ForceHdrPassthrough = "player.force_hdr_passthrough"
 
     /**
-     * Local-only per-profile setting: the highest HEVC level this device
-     * reports to the server, in the probe's normalized form (level x 30, so
-     * 153 = 5.1, 186 = 6.2). Defaults to 6.2; an explicit 0 (Off) reports
-     * what the decoder advertises.
+     * Local-only per-profile setting for Ignore HEVC Level Limits, on by
+     * default. On omits HEVC decoder level bounds so the server attempts
+     * playback without rejecting the file's HEVC level. Off reports the
+     * decoder's own levels. All other capability checks remain in place.
      *
      * Many files are tagged with a higher level than their real bitrate and
      * resolution need, and decoders that advertise level 5.x usually play
      * them anyway. Without an override the server refuses them and
-     * transcodes. Like Plex's "ignore level" option, this overrides the
-     * advertised limit: a stream that truly exceeds the decoder can stutter
-     * or fail. Users can select Off to restore the decoder's own levels.
+     * transcodes. A stream that truly exceeds the decoder can stutter or fail.
+     *
+     * Keep the existing integer storage key for compatibility: 0 is Off and
+     * any positive value is On, including previously saved numeric levels.
+     * New writes use 0/1; the value no longer represents a level ceiling.
      * A device fact, not a server playback preference, so it never enters
      * [DeviceSettings].
      */

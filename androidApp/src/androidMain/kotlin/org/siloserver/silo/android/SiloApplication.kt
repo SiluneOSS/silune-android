@@ -50,7 +50,7 @@ class SiloApplication : Application(), Configuration.Provider, SingletonImageLoa
         )
         // Reports the user's HEVC level override in every capability claim.
         runCatching {
-            org.siloserver.silo.common.settings.HevcLevelOverrideBinder.start(
+            org.siloserver.silo.common.settings.IgnoreHevcLevelLimitsBinder.start(
                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO),
                 koinApp.koin.get(),
             )

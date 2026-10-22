@@ -319,35 +319,28 @@ fun PlaybackEpisodesSection(
     }
 }
 
-// HEVC level override, normalized as level x 30 (0 = report the decoder's own).
-private val hevcLevelOverrideOptions = listOf(0, 150, 153, 156, 180, 183, 186)
-private fun hevcLevelOverrideLabel(level: Int) =
-    if (level <= 0) "Off" else "Level %d.%d".format(level / 30, (level % 30) / 3)
-
 /**
- * Playback → Decoder: the HEVC level this device reports to the server. See
+ * Playback → Decoder: whether HEVC level limits apply. See
  * [PlaybackSettingsKeys.HevcLevelOverride].
  */
 @Composable
 fun PlaybackDecoderSection(
-    hevcLevelOverride: Int,
-    onHevcLevelOverrideChanged: (Int) -> Unit,
+    ignoreHevcLevelLimits: Boolean,
+    onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsSection(
         title = "Decoder",
-        footer = "HEVC Level Override reports a higher HEVC level than this device's decoder advertises, " +
-            "so the server direct plays files tagged above it (such as level 6.2) instead of transcoding " +
-            "them. Off uses the decoder's reported limit. Files that truly exceed the decoder may stutter or fail.",
+        footer = "Ignore HEVC Level Limits attempts playback even when a file's HEVC level exceeds " +
+            "the decoder's reported limit. Other compatibility checks still apply. " +
+            "Turn it off to use the decoder's reported levels. Files that exceed the decoder's " +
+            "actual capabilities may stutter or fail.",
         modifier = modifier,
     ) {
-        SettingsDropdownRow(
-            label = "HEVC Level Override",
-            value = hevcLevelOverrideLabel(hevcLevelOverride),
-            options = hevcLevelOverrideOptions.map(::hevcLevelOverrideLabel),
-            onOptionSelected = { label ->
-                onHevcLevelOverrideChanged(hevcLevelOverrideOptions.first { hevcLevelOverrideLabel(it) == label })
-            },
+        SettingsSwitchRow(
+            label = "Ignore HEVC Level Limits",
+            checked = ignoreHevcLevelLimits,
+            onCheckedChange = onIgnoreHevcLevelLimitsChanged,
         )
     }
 }

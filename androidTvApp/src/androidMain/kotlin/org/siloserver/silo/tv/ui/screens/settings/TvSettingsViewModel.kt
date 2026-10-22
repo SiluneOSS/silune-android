@@ -137,7 +137,7 @@ class TvSettingsViewModel(
         val subtitleMatchesDevice: Boolean = false,
         val dvProfile7HDR10Fallback: Boolean = false,
         val forceHdrPassthrough: Boolean = false,
-        val hevcLevelOverride: Int = PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE,
+        val ignoreHevcLevelLimits: Boolean = PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS,
         val trueBlackBars: Boolean = false,
         val autoSkipCredits: Boolean = false,
         // Seconds to skip back on resume (0 = off); consecutive auto-advances
@@ -441,8 +441,8 @@ class TvSettingsViewModel(
             }
         }
         viewModelScope.launch {
-            playerSettingsStore.hevcLevelOverrideFlow.collect { value ->
-                _uiState.update { it.copy(hevcLevelOverride = value) }
+            playerSettingsStore.ignoreHevcLevelLimitsFlow.collect { value ->
+                _uiState.update { it.copy(ignoreHevcLevelLimits = value) }
             }
         }
         viewModelScope.launch {
@@ -761,8 +761,8 @@ class TvSettingsViewModel(
         viewModelScope.launch { playerSettingsStore.setForceHdrPassthrough(value) }
     }
 
-    fun onHevcLevelOverrideChanged(value: Int) {
-        viewModelScope.launch { playerSettingsStore.setHevcLevelOverride(value) }
+    fun onIgnoreHevcLevelLimitsChanged(value: Boolean) {
+        viewModelScope.launch { playerSettingsStore.setIgnoreHevcLevelLimits(value) }
     }
 
     fun onTrueBlackBarsChanged(value: Boolean) {

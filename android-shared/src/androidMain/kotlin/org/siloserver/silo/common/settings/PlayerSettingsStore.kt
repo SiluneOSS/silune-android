@@ -37,8 +37,7 @@ object LetterboxExpansion {
 
 interface PlayerSettingsStore {
     companion object {
-        /** HEVC level 6.2 in the capability probe's normalized form (level x 30). */
-        const val DEFAULT_HEVC_LEVEL_OVERRIDE = 186
+        const val DEFAULT_IGNORE_HEVC_LEVEL_LIMITS = true
     }
 
     /**
@@ -72,8 +71,8 @@ interface PlayerSettingsStore {
     val forceHdrPassthroughFlow: Flow<Boolean>
 
     /** See [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]. */
-    val hevcLevelOverrideFlow: Flow<Int>
-        get() = kotlinx.coroutines.flow.flowOf(0)
+    val ignoreHevcLevelLimitsFlow: Flow<Boolean>
+        get() = kotlinx.coroutines.flow.flowOf(DEFAULT_IGNORE_HEVC_LEVEL_LIMITS)
 
     /**
      * How far to expand video whose black bars are encoded into the picture
@@ -194,7 +193,7 @@ interface PlayerSettingsStore {
     suspend fun setPictureInPictureEnabled(value: Boolean)
     suspend fun setForceHdrPassthrough(value: Boolean)
 
-    suspend fun setHevcLevelOverride(value: Int) {}
+    suspend fun setIgnoreHevcLevelLimits(value: Boolean) {}
     suspend fun setLetterboxExpansion(value: String) = Unit
     suspend fun setTrueBlackBars(value: Boolean) = Unit
     suspend fun setDownloadsWifiOnly(value: Boolean)

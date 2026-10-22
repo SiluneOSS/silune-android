@@ -5,7 +5,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import org.siloserver.silo.model.playback.HdrCapabilities
+import org.siloserver.silo.model.playback.VideoDecodeCapability
 
 /**
  * Regression guard for the resolution label the client reports in its
@@ -24,6 +27,55 @@ import kotlin.test.assertTrue
  * becomes unreachable server-side. These asserts pin the shape.
  */
 class MediaCodecCapabilitiesProbeTest {
+
+    @Test
+    fun `ignoring HEVC levels removes the ceiling and preserves every other capability`() {
+        val actual = levelLimitProbe()
+        val reported = MediaCodecCapabilitiesProbe.withHevcLevelLimitsIgnored(actual, enabled = true)
+        val hevc = reported.videoDecodeCapabilities.first()
+
+        assertTrue(hevc.levels.isEmpty(), "an empty list skips the server's level comparison for any level")
+        assertEquals(actual.videoDecodeCapabilities.first(), hevc.copy(levels = listOf(153)))
+        assertEquals(actual.videoDecodeCapabilities.drop(1), reported.videoDecodeCapabilities.drop(1))
+        assertEquals(actual, reported.copy(videoDecodeCapabilities = actual.videoDecodeCapabilities))
+        assertEquals(listOf(153), actual.videoDecodeCapabilities.first().levels, "the hardware probe stays intact")
+    }
+
+    @Test
+    fun `turning ignore HEVC levels off restores the hardware level report`() {
+        val actual = levelLimitProbe()
+        MediaCodecCapabilitiesProbe.withHevcLevelLimitsIgnored(actual, enabled = true)
+
+        assertSame(actual, MediaCodecCapabilitiesProbe.withHevcLevelLimitsIgnored(actual, enabled = false))
+        assertEquals(listOf(153), actual.videoDecodeCapabilities.first().levels)
+    }
+
+    @Test
+    fun `ignoring HEVC levels does not invent an HEVC decoder`() {
+        val actual = levelLimitProbe().let { probe ->
+            probe.copy(
+                videoCodecs = setOf("h264"),
+                videoDecodeCapabilities = probe.videoDecodeCapabilities.filter { it.codec == "h264" },
+            )
+        }
+
+        assertEquals(actual, MediaCodecCapabilitiesProbe.withHevcLevelLimitsIgnored(actual, enabled = true))
+    }
+
+    private fun levelLimitProbe() = MediaCodecCapabilitiesProbe.ProbeResult(
+        videoCodecs = setOf("hevc", "h264", "av1"),
+        videoDecodeCapabilities = listOf(
+            VideoDecodeCapability(
+                codec = "hevc", decoderName = "hardware.hevc", profiles = listOf("main 10"),
+                levels = listOf(153), bitDepths = listOf(10), maxWidth = 3840, maxHeight = 2160,
+                maxFrameRate = 60.0, maxBitrateKbps = 80_000, hardware = true,
+            ),
+            VideoDecodeCapability(codec = "h264", levels = listOf(51), hardware = true),
+            VideoDecodeCapability(codec = "av1", levels = listOf(13), hardware = true),
+        ),
+        hdr = HdrCapabilities(hdr10 = true, dolbyVisionProfiles = listOf(8)),
+        maxResolution = "2160p", supportsDvProfile7 = false, hevcHdr10Decoder = true,
+    )
 
     @Test
     fun `8K decoders bucket to 4320p`() {

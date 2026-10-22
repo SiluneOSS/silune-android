@@ -3,7 +3,10 @@
 The fork publishes optimized, signed phone and TV APKs on
 [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
 These are unofficial builds of the Silo Android clients, with SigmaStreams
-branding and the fork's HEVC level override defaulting to 6.2.
+branding and Ignore HEVC Level Limits enabled by default. The playback setting
+is an On/Off switch: On removes HEVC level bounds from capability reports, while
+Off uses the decoder's reported levels. Other compatibility checks still apply.
+Existing saved numeric levels become On; a saved Off stays Off.
 
 ## Schedule and manual builds
 

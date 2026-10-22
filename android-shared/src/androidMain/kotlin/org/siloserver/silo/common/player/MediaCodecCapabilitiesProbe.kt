@@ -43,34 +43,32 @@ object MediaCodecCapabilitiesProbe {
     private var cached: ProbeResult? = null
 
     /**
-     * The user's HEVC level override (see
-     * [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]),
-     * in normalized form (level x 30). 0 reports the decoder's own levels.
-     * Fed by [org.siloserver.silo.common.settings.HevcLevelOverrideBinder].
+     * Whether HEVC level limits are ignored (see
+     * [org.siloserver.silo.model.settings.PlaybackSettingsKeys.HevcLevelOverride]).
+     * Fed by [org.siloserver.silo.common.settings.IgnoreHevcLevelLimitsBinder].
      */
     @Volatile
-    var hevcLevelOverride: Int = PlayerSettingsStore.DEFAULT_HEVC_LEVEL_OVERRIDE
+    var ignoreHevcLevelLimits: Boolean = PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS
 
-    fun probe(): ProbeResult = withHevcLevelOverride(
+    fun probe(): ProbeResult = withHevcLevelLimitsIgnored(
         cached ?: synchronized(this) { cached ?: computeProbe().also { cached = it } },
-        hevcLevelOverride,
+        ignoreHevcLevelLimits,
     )
 
     /**
-     * Adds every standard HEVC level up to [override] to each hardware HEVC
-     * decoder's reported levels, so the server stops refusing streams tagged
-     * above the decoder's advertised ceiling. Levels the decoder already
-     * reports are kept.
+     * An empty levels list makes the server skip only its level comparison
+     * (capabilities_v3.go, videoEligibleV3). Keep every other decoder bound
+     * intact and leave the cached hardware probe untouched so Off restores
+     * the advertised levels. No synthetic maximum level is needed.
      */
-    internal fun withHevcLevelOverride(result: ProbeResult, override: Int): ProbeResult {
-        if (override <= 0) return result
-        val forced = HEVC_LEVELS.values.filter { it <= override }.toSet() + override
+    internal fun withHevcLevelLimitsIgnored(result: ProbeResult, enabled: Boolean): ProbeResult {
+        if (!enabled) return result
         return result.copy(
             videoDecodeCapabilities = result.videoDecodeCapabilities.map { capability ->
                 if (capability.codec != "hevc") {
                     capability
                 } else {
-                    capability.copy(levels = (capability.levels + forced).distinct().sorted())
+                    capability.copy(levels = emptyList())
                 }
             },
         )

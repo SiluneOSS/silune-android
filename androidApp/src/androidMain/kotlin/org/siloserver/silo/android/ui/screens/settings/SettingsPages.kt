@@ -182,8 +182,8 @@ fun SettingsPlaybackScreen(viewModel: SettingsViewModel, onBackClick: () -> Unit
         }
         item(key = "decoder") {
             PlaybackDecoderSection(
-                hevcLevelOverride = state.hevcLevelOverride,
-                onHevcLevelOverrideChanged = viewModel::setHevcLevelOverride,
+                ignoreHevcLevelLimits = state.ignoreHevcLevelLimits,
+                onIgnoreHevcLevelLimitsChanged = viewModel::setIgnoreHevcLevelLimits,
             )
         }
         if (state.episodeSpoilers.isSupported) {
