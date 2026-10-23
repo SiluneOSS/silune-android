@@ -29,3 +29,13 @@ The phone and TV apps bundle [Inter](https://github.com/rsms/inter) (`res/font/i
 ## Gradle Wrapper
 
 The Gradle wrapper scripts retain their upstream Apache-2.0 license.
+
+## Plezy audio normalization
+
+`android-shared/src/androidMain/kotlin/org/siloserver/silo/common/player/audio/AudioNormalizationEffect.kt`
+is adapted from [edde746/plezy](https://github.com/edde746/plezy/blob/cd0a2dff560d95410eb3896c4239d276568af66d/android/app/src/main/kotlin/com/edde746/plezy/exoplayer/AudioNormalizationEffect.kt),
+commit `cd0a2dff560d95410eb3896c4239d276568af66d`, under the GNU General Public
+License version 3. See the [included license](docs/licenses/plezy-GPL-3.0.txt).
+The Android effect parameters and fallback match Plezy; package naming,
+formatting, verified effect enablement, and cleanup after failed initialization
+are adapted for Silo.

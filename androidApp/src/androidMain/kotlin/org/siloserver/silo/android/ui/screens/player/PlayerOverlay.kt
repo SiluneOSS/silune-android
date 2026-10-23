@@ -774,8 +774,11 @@ fun PlayerOverlay(
                 settingsSheetVisible = false
                 statsSheetVisible = true
             },
+            audioNormalizationEnabled = viewModel.audioNormalizationEnabled.collectAsState().value,
+            onSetAudioNormalizationEnabled = viewModel::setAudioNormalizationEnabled,
             audioDelayMs = viewModel.audioDelayMs.collectAsState().value,
-            audioDelayEnabled = state.playbackPlan?.claims?.audio?.passthrough != true,
+            audioDelayEnabled = viewModel.audioNormalizationEnabled.collectAsState().value ||
+                state.playbackPlan?.claims?.audio?.passthrough != true,
             onSetAudioDelay = viewModel::onSetAudioDelay,
             subtitleDelayMs = viewModel.subtitleDelayMs.collectAsState().value,
             onSetSubtitleDelay = viewModel::onSetSubtitleDelay,

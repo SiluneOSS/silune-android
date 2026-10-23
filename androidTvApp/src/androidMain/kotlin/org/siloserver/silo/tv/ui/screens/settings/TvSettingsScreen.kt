@@ -303,6 +303,7 @@ fun TvSettingsScreen(
         onDvProfile7HDR10FallbackChanged = viewModel::onDvProfile7HDR10FallbackChanged,
         onForceHdrPassthroughChanged = viewModel::onForceHdrPassthroughChanged,
         onIgnoreHevcLevelLimitsChanged = viewModel::onIgnoreHevcLevelLimitsChanged,
+        onAudioNormalizationEnabledChanged = viewModel::onAudioNormalizationEnabledChanged,
         onTrueBlackBarsChanged = viewModel::onTrueBlackBarsChanged,
         onResumeRewindSecondsChanged = viewModel::onResumeRewindSecondsChanged,
         onPassOutThresholdChanged = viewModel::onPassOutThresholdChanged,
@@ -459,6 +460,7 @@ private fun SettingsSplitLayout(
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
     onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
+    onAudioNormalizationEnabledChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -545,6 +547,7 @@ private fun SettingsSplitLayout(
             onDvProfile7HDR10FallbackChanged = onDvProfile7HDR10FallbackChanged,
             onForceHdrPassthroughChanged = onForceHdrPassthroughChanged,
             onIgnoreHevcLevelLimitsChanged = onIgnoreHevcLevelLimitsChanged,
+            onAudioNormalizationEnabledChanged = onAudioNormalizationEnabledChanged,
             onTrueBlackBarsChanged = onTrueBlackBarsChanged,
             onResumeRewindSecondsChanged = onResumeRewindSecondsChanged,
             onPassOutThresholdChanged = onPassOutThresholdChanged,
@@ -834,6 +837,7 @@ private fun SettingsDetailPane(
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
     onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
+    onAudioNormalizationEnabledChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -895,6 +899,7 @@ private fun SettingsDetailPane(
             onDvProfile7HDR10FallbackChanged = onDvProfile7HDR10FallbackChanged,
             onForceHdrPassthroughChanged = onForceHdrPassthroughChanged,
             onIgnoreHevcLevelLimitsChanged = onIgnoreHevcLevelLimitsChanged,
+            onAudioNormalizationEnabledChanged = onAudioNormalizationEnabledChanged,
             onTrueBlackBarsChanged = onTrueBlackBarsChanged,
                 onResumeRewindSecondsChanged = onResumeRewindSecondsChanged,
                 onPassOutThresholdChanged = onPassOutThresholdChanged,
@@ -1224,6 +1229,7 @@ private fun TvPlaybackSettingsPane(
     onDvProfile7HDR10FallbackChanged: (Boolean) -> Unit,
     onForceHdrPassthroughChanged: (Boolean) -> Unit,
     onIgnoreHevcLevelLimitsChanged: (Boolean) -> Unit,
+    onAudioNormalizationEnabledChanged: (Boolean) -> Unit,
     onTrueBlackBarsChanged: (Boolean) -> Unit,
     onResumeRewindSecondsChanged: (Int) -> Unit,
     onPassOutThresholdChanged: (Int) -> Unit,
@@ -1342,6 +1348,19 @@ private fun TvPlaybackSettingsPane(
                         " True Black Bars stops Silune from drawing the bars around the picture during " +
                         "playback. Try it if they look grey in HDR or Dolby Vision, and turn it off again " +
                         "if they get lighter or show a thin line.",
+                )
+            }
+        }
+        item {
+            SettingsGroup(title = "Audio") {
+                SettingsToggleRow(
+                    label = "Night mode",
+                    checked = state.audioNormalizationEnabled,
+                    onCheckedChange = onAudioNormalizationEnabledChanged,
+                )
+                SettingsFooterText(
+                    text = "Softens loud scenes and raises quiet dialogue. Uses decoded audio instead of " +
+                        "passthrough. Saved for this profile on this device.",
                 )
             }
         }

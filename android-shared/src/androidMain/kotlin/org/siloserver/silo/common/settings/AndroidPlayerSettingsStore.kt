@@ -332,6 +332,12 @@ class AndroidPlayerSettingsStore(
                 ?.let(PlaybackSpeedRange::normalize) ?: 1.0
         }
 
+    override val audioNormalizationEnabledFlow: Flow<Boolean> =
+        profileScopedFlow(false) { p, s -> p.boolFor(s, AUDIO_NORMALIZATION_ENABLED, false) }
+
+    override suspend fun setAudioNormalizationEnabled(value: Boolean) =
+        writeBoolLocal(AUDIO_NORMALIZATION_ENABLED, value)
+
     // ---- Ints ----------------------------------------------------------
     override val audioSyncMsFlow: Flow<Int> =
         profileScopedFlow(0) { p, s -> p.intFor(s, PlaybackSettingsKeys.AudioSyncMs, 0) }
@@ -930,6 +936,7 @@ class AndroidPlayerSettingsStore(
                 // the slot IS the reset: every reader falls back to the default
                 // it declares. Without this, the action would leave exactly the
                 // settings the user most associates with this device untouched.
+                it.remove(booleanPreferencesKey(scope.keyPrefix + AUDIO_NORMALIZATION_ENABLED))
                 it.remove(booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.PictureInPictureEnabled))
                 it.remove(booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.ForceHdrPassthrough))
                 it.remove(intPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.HevcLevelOverride))
@@ -1280,6 +1287,7 @@ class AndroidPlayerSettingsStore(
     }
 
     private companion object {
+        const val AUDIO_NORMALIZATION_ENABLED = "audio_normalization_enabled"
         const val SAVED_CUSTOM_SUBTITLE_APPEARANCE = "subtitle_appearance.saved_custom"
         /**
          * Local-only: the server-stored keys this device holds its own value

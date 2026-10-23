@@ -101,6 +101,11 @@ interface PlayerSettingsStore {
     // Doubles
     val playbackSpeedFlow: Flow<Double>
 
+    /** Device-local, per-profile night mode. No server setting exists for it. */
+    val audioNormalizationEnabledFlow: Flow<Boolean>
+        get() = flowOf(false)
+    suspend fun setAudioNormalizationEnabled(value: Boolean) = Unit
+
     // Ints
     val audioSyncMsFlow: Flow<Int>
     /** Canonical device-scoped subtitle offset (`player.subtitle_sync_ms`). */
