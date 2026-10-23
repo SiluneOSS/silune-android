@@ -1585,6 +1585,13 @@ class TvPlayerViewModel(
     /** False when the server is known to discard subtitle text opacity. */
     val subtitleTextOpacitySupported: StateFlow<Boolean> = playerSettingsStore.subtitleTextOpacitySupportedFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    val audioNormalizationEnabled: StateFlow<Boolean> = playerSettingsStore.audioNormalizationEnabledFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun setAudioNormalizationEnabled(value: Boolean) {
+        viewModelScope.launch { playerSettingsStore.setAudioNormalizationEnabled(value) }
+    }
+
     /**
      * Per-profile audio delay in ms, ±500 clamp. Sourced from
      * [PlayerSettingsStore.audioSyncMsFlow]; mirrored into the active

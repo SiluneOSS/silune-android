@@ -1,3 +1,5 @@
+@file:androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+
 package org.siloserver.silo.common.di
 
 import android.os.Build
@@ -78,6 +80,8 @@ val playerModule = module {
 
     @OptIn(UnstableApi::class)
     single { DelayAudioProcessor() }
+
+    single { org.siloserver.silo.common.player.audio.AudioNormalizationController() }
 
     single { SubtitleOffsetHolder() }
 

@@ -322,6 +322,34 @@ class AndroidPlayerSettingsStoreTest {
     }
 
     @Test
+    fun `night mode defaults off stays local and resets within its profile and server`() = runTest {
+        var profile = "profile-a"
+        var server = "https://one.example"
+        val stores = mutableMapOf<String, DataStore<Preferences>>()
+        val store = AndroidPlayerSettingsStore(
+            context = mockContextStub(), legacyCache = fakeLegacyCache,
+            getActiveProfileId = { profile }, getServerUrl = { server },
+            getDeviceId = { "device" }, serverSettingsFlusher = fakeFlusher,
+            dataStoreFactory = { id -> stores.getOrPut(id) {
+                PreferenceDataStoreFactory.create(produceFile = { File(tempFolder.root, "night_$id.preferences_pb") })
+            } },
+        )
+        assertFalse(store.audioNormalizationEnabledFlow.first())
+        store.setAudioNormalizationEnabled(true)
+        assertTrue(store.audioNormalizationEnabledFlow.first())
+        profile = "profile-b"
+        assertFalse(store.audioNormalizationEnabledFlow.first())
+        profile = "profile-a"
+        server = "https://two.example"
+        assertFalse(store.audioNormalizationEnabledFlow.first())
+        server = "https://one.example"
+        assertTrue(store.audioNormalizationEnabledFlow.first())
+        assertTrue(fakeFlusher.calls.isEmpty())
+        store.resetAllDeviceSettings()
+        assertFalse(store.audioNormalizationEnabledFlow.first())
+    }
+
+    @Test
     fun `HDR override is local scoped and resettable`() = runTest {
         var profile = "profile-a"
         var server = "https://one.example"

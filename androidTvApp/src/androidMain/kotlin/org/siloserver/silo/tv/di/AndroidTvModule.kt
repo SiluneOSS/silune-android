@@ -228,6 +228,7 @@ val androidTvModule = module {
             subtitleOffsetHolder = get(),
             libassBridge = get(),
             playbackAnalytics = get(),
+            audioNormalization = get(),
         )
     }
     single { PlaybackSessionManager(get(), get(), get()) }
