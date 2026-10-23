@@ -16,7 +16,7 @@ hardware decoder's actual capabilities. Existing saved numeric levels become
 On; a saved Off stays Off.
 
 The release workflow publishes optimized, signed phone and TV APKs on
-[GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
+[GitHub Releases](https://github.com/SiluneOSS/silune-android/releases).
 
 ## Schedule and manual builds
 
@@ -28,13 +28,13 @@ Run workflow, selecting `main`. Leave **Force build** unchecked to use the same
 change check, or check it to compile and publish even when nothing changed.
 
 Each run uses GitHub's branch-merge API to merge the exact current
-`Silo-Server/silo-android` `main` commit into this fork's `main`. The explicit
-source is important because the fork's immediate parent is `edrock200/silo-android`;
-GitHub's ordinary fork-sync API would follow that parent instead. The merge
-preserves the fork's commits and fails on conflicts, without resetting
+`Silo-Server/silo-android` `main` commit into `SiluneOSS/silune-android` `main`.
+The repository is a direct fork of official Silo Android. This API merge requires
+both repositories to share a GitHub fork network. The merge preserves the fork's
+commits and fails on conflicts, without resetting
 or force-pushing the branch. After syncing, it compares the merged source's Git
 tree (all tracked file contents) with the source tag of the most recently
-published complete SigmaStreams release. Matching contents skip compilation
+published complete Silune release. Matching contents skip compilation
 and publishing, even if commit history changed. The daily sync still completes,
 and the run summary explains the decision. Drafts, prereleases and releases
 missing either APK or the verification files do not advance this baseline.
@@ -61,8 +61,8 @@ Each dated release includes:
 Each successful daily build is published as a regular GitHub release and
 explicitly marked **Latest**. These permanent links follow that release:
 
-- [Latest phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-phone.apk)
-- [Latest TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-tv.apk)
+- [Latest phone APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-phone.apk)
+- [Latest TV APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-tv.apk)
 
 The APKs are optimized release builds. Nothing is published until signature checks pass and downloaded
 release assets match the locally calculated checksums. A failed run leaves the
@@ -89,10 +89,9 @@ private backup of the key and passwords outside Git. Signing material is decoded
 only on the temporary build runner and removed after the build. The public
 certificate fingerprint can be checked with `apksigner verify --print-certs`.
 
-The existing application/package IDs remain unchanged for protocol compatibility.
-An official or locally debug-signed APK uses a different signing identity and
-must be uninstalled before installing this fork; that clears the app's local data.
-Later daily builds signed with the SigmaStreams key update in place.
+Both apps use the Silune application ID `org.silune.app`, so they install
+separately from Silo and earlier forks with different application IDs. Later
+Silune builds signed with the same persistent release key update in place.
 
 The APK version, in-app version label, and GitHub release title preserve Silo's
 version and build number, then append the Silune build date:
@@ -138,9 +137,10 @@ The Silune artwork is licensed under AGPL-3.0-or-later.
 New releases use `silune-phone.apk` and `silune-tv.apk`. Permanent download URLs
 use those filenames once a Silune release is published. Previously published
 releases retain their original asset names; existing links using `prism-*`
-or earlier filenames will not follow new Silune releases. The repository owner,
-application IDs, and persistent signing key stay the same, so existing fork
-installs can update in place with the matching phone or TV build.
+or earlier filenames will not follow new Silune releases. The repository is now
+`SiluneOSS/silune-android`; the persistent signing key is retained. Builds with
+the same application ID and signing key update in place with the matching phone
+or TV build.
 
 The local `unbranded` branch restores the original Silo name, artwork, notices,
 and logo sizing while retaining the fork's playback and release tooling.

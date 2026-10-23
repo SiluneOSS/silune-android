@@ -188,7 +188,7 @@ class BuildDecisionTest(unittest.TestCase):
     def test_decide_reads_all_release_pages_and_writes_job_output(self):
         with tempfile.TemporaryDirectory() as tmp:
             output, summary = Path(tmp) / "output", Path(tmp) / "summary"
-            env = dict(GITHUB_REPOSITORY="SigmaStreams/silo-android", SOURCE_SHA=self.source,
+            env = dict(GITHUB_REPOSITORY="SiluneOSS/silune-android", SOURCE_SHA=self.source,
                        FORCE_BUILD="false", GITHUB_OUTPUT=str(output), GITHUB_STEP_SUMMARY=str(summary))
             def run(command, **kwargs):
                 if "releases?per_page=100" in command[2]:

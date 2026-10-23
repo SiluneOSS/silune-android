@@ -73,13 +73,13 @@ Android 7.0 and 7.1 (API 24/25) are supported on both phone and Android TV. Vide
 
 ## Install APKs
 
-Get Silune builds from this fork's [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
+Get Silune builds from this fork's [GitHub Releases](https://github.com/SiluneOSS/silune-android/releases).
 Choose the APK for your device:
 
 | Device | File | Latest download |
 | --- | --- | --- |
-| Android phone or tablet | `silune-phone.apk` | [Phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-phone.apk) |
-| NVIDIA Shield, Android TV, or Google TV | `silune-tv.apk` | [TV APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-tv.apk) |
+| Android phone or tablet | `silune-phone.apk` | [Phone APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-phone.apk) |
+| NVIDIA Shield, Android TV, or Google TV | `silune-tv.apk` | [TV APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-tv.apk) |
 
 These download links require a published Silune release marked **Latest**.
 Earlier releases keep their original names and assets. The old upstream

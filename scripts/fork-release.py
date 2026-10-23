@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stamp and package the SigmaStreams fork without the upstream Play workflow."""
+"""Stamp and package Silune without the upstream Play workflow."""
 import datetime as dt
 import hashlib
 import importlib.util
@@ -173,14 +173,13 @@ def package(root, info, out):
         "The Silune date uses Pacific time (MMDDYYYY).\n\n"
         "- `silune-phone.apk`: Android phones and tablets.\n"
         "- `silune-tv.apk`: Android TV / Google TV.\n"
-        "- Both APKs are universal and signed with the persistent SigmaStreams key.\n"
+        "- Both APKs are universal and signed with the persistent release key.\n"
         "- These are optimized release APKs, published as regular GitHub releases.\n"
-        "- Latest phone APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-phone.apk\n"
-        "- Latest TV APK: https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-tv.apk\n\n"
-        "The initial switch from an official or locally debug-signed app requires an uninstall because "
-        "the signing keys differ; uninstalling clears the app's local data. "
-        "Later SigmaStreams builds can update in place.\n\n"
-        f"Source: https://github.com/SigmaStreams/silo-android/tree/{info['source_sha']}\n\n"
+        "- Latest phone APK: https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-phone.apk\n"
+        "- Latest TV APK: https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-tv.apk\n\n"
+        "Silune uses its own application ID and installs separately from Silo. "
+        "Later Silune builds signed with the same release key can update in place.\n\n"
+        f"Source: https://github.com/SiluneOSS/silune-android/tree/{info['source_sha']}\n\n"
         f"Upstream checked: https://github.com/Silo-Server/silo-android/commit/{info['upstream_checked_sha']}\n\n"
         "Verify downloads with `sha256sum --check SHA256SUMS`. "
         "Source code is available under AGPL-3.0-or-later; third-party notices remain in the repository.\n")

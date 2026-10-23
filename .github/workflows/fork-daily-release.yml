@@ -23,7 +23,7 @@ defaults:
 
 jobs:
   sync:
-    if: github.repository == 'SigmaStreams/silo-android' && github.ref == 'refs/heads/main'
+    if: github.repository == 'SiluneOSS/silune-android' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -41,8 +41,8 @@ jobs:
         run: |
           set -euo pipefail
           upstream_sha="$(gh api repos/Silo-Server/silo-android/commits/main --jq .sha)"
-          # This fork's immediate parent is another fork. Merge the official
-          # source SHA explicitly instead of using the parent-following sync API.
+          # Merge the official source SHA explicitly rather than following
+          # an intermediate fork's main branch.
           # Fork-network commits are addressable by SHA; conflicts leave main intact.
           gh api --method POST "repos/${GITHUB_REPOSITORY}/merges" \
             -f base=main -f head="${upstream_sha}" \
