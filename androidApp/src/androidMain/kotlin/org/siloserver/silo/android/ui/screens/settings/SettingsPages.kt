@@ -119,8 +119,8 @@ fun SettingsInterfaceScreen(viewModel: SettingsViewModel, onBackClick: () -> Uni
 }
 
 /**
- * Playback (Apple `PlaybackSettingsView`): Streaming, Episodes, the Video and
- * Audiobooks skip intervals, and the reset.
+ * Playback (Apple `PlaybackSettingsView`), plus Android's audio controls,
+ * cellular quality, decoder settings, and skip intervals.
  */
 @Composable
 fun SettingsPlaybackScreen(viewModel: SettingsViewModel, onBackClick: () -> Unit) {
@@ -151,6 +151,12 @@ fun SettingsPlaybackScreen(viewModel: SettingsViewModel, onBackClick: () -> Unit
                 onDvProfile7HDR10FallbackChanged = viewModel::setDvProfile7HDR10Fallback,
                 onPictureInPictureEnabledChanged = viewModel::setPictureInPictureEnabled,
                 onUseProfileSetting = viewModel::useProfileSetting,
+            )
+        }
+        item(key = "audio") {
+            PlaybackAudioSection(
+                audioNormalizationEnabled = state.audioNormalizationEnabled,
+                onAudioNormalizationEnabledChanged = viewModel::setAudioNormalizationEnabled,
             )
         }
         item(key = "cellular") {

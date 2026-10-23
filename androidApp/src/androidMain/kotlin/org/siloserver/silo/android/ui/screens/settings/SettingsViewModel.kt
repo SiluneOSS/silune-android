@@ -127,6 +127,7 @@ data class SettingsUiState(
     val resumeRewindSeconds: Int = 7,
     val passOutThreshold: Int = 3,
     val ignoreHevcLevelLimits: Boolean = PlayerSettingsStore.DEFAULT_IGNORE_HEVC_LEVEL_LIMITS,
+    val audioNormalizationEnabled: Boolean = false,
 
     // Downloads
     val downloadsWifiOnly: Boolean = true,
@@ -385,6 +386,13 @@ class SettingsViewModel(
         playerSettingsStore.ignoreHevcLevelLimitsFlow
             .onEach { enabled -> _uiState.update { it.copy(ignoreHevcLevelLimits = enabled) } }
             .launchIn(viewModelScope)
+        playerSettingsStore.audioNormalizationEnabledFlow
+            .onEach { enabled -> _uiState.update { it.copy(audioNormalizationEnabled = enabled) } }
+            .launchIn(viewModelScope)
+    }
+
+    fun setAudioNormalizationEnabled(value: Boolean) {
+        viewModelScope.launch { playerSettingsStore.setAudioNormalizationEnabled(value) }
     }
 
     fun setIgnoreHevcLevelLimits(value: Boolean) {

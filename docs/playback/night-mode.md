@@ -1,8 +1,10 @@
 # Night mode
 
 Night mode reduces the difference between quiet dialogue and loud scenes.
-Toggle **Night mode** in the phone player's Settings → Audio & subtitles or
-in the TV player's Audio pane. It defaults off and is saved locally for the
+On phone and TV, toggle **Night mode** in Settings → Playback → Audio.
+During playback, use the phone player's Settings → Audio & subtitles or the
+TV player's Audio pane. Each device's settings and player controls use the
+same saved preference. It defaults off and is saved locally for the
 active server and profile on this device. It applies to local playback;
 Cast receivers control their own audio.
 

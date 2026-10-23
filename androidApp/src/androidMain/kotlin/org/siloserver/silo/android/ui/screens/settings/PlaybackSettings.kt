@@ -193,6 +193,27 @@ fun PlaybackStreamingSection(
     }
 }
 
+/** Playback → Audio: the same device-local preference used by the player. */
+@Composable
+fun PlaybackAudioSection(
+    audioNormalizationEnabled: Boolean,
+    onAudioNormalizationEnabledChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsSection(
+        title = "Audio",
+        footer = "Night mode uses decoded audio instead of passthrough. Saved for this profile on this device.",
+        modifier = modifier,
+    ) {
+        SettingsSwitchRow(
+            label = "Night mode",
+            description = "Softens loud scenes and raises quiet dialogue.",
+            checked = audioNormalizationEnabled,
+            onCheckedChange = onAudioNormalizationEnabledChanged,
+        )
+    }
+}
+
 /**
  * Playback → Cellular, phone only: the quality used on mobile data and metered
  * networks, picked as one preset because bitrate is what matters on a data
