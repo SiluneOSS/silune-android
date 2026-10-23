@@ -1,10 +1,10 @@
 Silune brand assets
 ===================
 
-The launcher icons, wordmark, and TV banner use a silver crescent S
-on a midnight-blue (#0C1428) icon field. They do not incorporate the Silo
-logo or wordmark. SVG sources are in branding/;
-scripts/generate-silune-branding.py renders the Android copies.
+The launcher icons, wordmark, and TV banner use a purple split-prism mark
+on a charcoal (#25252D) icon field, paired with white lettering.
+They do not incorporate the Silo logo or wordmark. SVG sources are in
+branding/; scripts/generate-silune-branding.py renders the Android copies.
 
 These Silune assets are licensed under AGPL-3.0-or-later, like the
 application's source code.

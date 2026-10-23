@@ -12,7 +12,7 @@ import subprocess
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-BACKGROUND = "#0C1428"
+BACKGROUND = "#25252D"
 
 
 def render(name, width, height):

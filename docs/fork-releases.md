@@ -109,16 +109,18 @@ previously published releases are unchanged.
 ## Branding sources
 
 The app, accessibility descriptions, and HTTP client-name headers use **Silune**
-(**Silune TV** for TV client headers). Two crescent curves form a silver S,
-on a midnight-blue (`#0C1428`) launcher background. The wordmark uses a soft
-silver (`#F1F5FC`); the brand line is "Your media, after dark."
+(**Silune TV** for TV client headers). The mark uses two angular purple forms
+separated by a diagonal cut, with three facets on the upper form. Violet
+(`#5736B4`), lavender (`#B59AF4`), and muted purple (`#6856A3`) sit on a
+charcoal (`#25252D`) launcher background. The wordmark pairs the mark with
+white lettering; the brand line is "Your media, after dark."
 
 The editable sources are `branding/silune-mark.svg` and
 `branding/silune-wordmark.svg`. Regenerate the checked-in PNGs with
 `python3 scripts/generate-silune-branding.py` (requires `rsvg-convert` and Pillow).
 The DejaVu Sans Bold lettering is outlined for consistent rendering.
 The in-app wordmark has a transparent background.
-Android's adaptive launcher insets the transparent crescent S mark; the 320×180 TV
+Android's adaptive launcher insets the transparent split-prism mark; the 320×180 TV
 banner centers a 170-pixel-wide wordmark inside Fire TV's square crop.
 Resource IDs and Kotlin symbol names remain stable to reduce merge conflicts.
 The Silune artwork is licensed under AGPL-3.0-or-later.

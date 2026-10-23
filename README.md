@@ -1,5 +1,5 @@
 > **Silune — your media, after dark.** Unofficial Android phone and TV clients,
-> with a silver crescent S on midnight blue and Ignore HEVC Level Limits
+> with a purple split-prism mark on charcoal and Ignore HEVC Level Limits
 > enabled by default.
 > Upstream syncs daily; changed source produces signed APKs in [Releases](https://github.com/SigmaStreams/silo-android/releases).
 > Permanent downloads: [phone APK](https://github.com/SigmaStreams/silo-android/releases/latest/download/silune-phone.apk)
