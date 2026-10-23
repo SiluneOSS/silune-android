@@ -14,6 +14,8 @@ import kotlinx.serialization.json.JsonObject
  */
 @Serializable
 enum class SubtitleFontSizePreset(val wire: String) {
+    // Android TV extension, stored locally; server writes use Small as a fallback.
+    @SerialName("xsmall") XSmall("xsmall"),
     @SerialName("small") Small("small"),
     @SerialName("medium") Medium("medium"),
     @SerialName("large") Large("large"),
@@ -23,6 +25,7 @@ enum class SubtitleFontSizePreset(val wire: String) {
 
 val SubtitleFontSizePreset.pointSize: Double
     get() = when (this) {
+        SubtitleFontSizePreset.XSmall -> 28.0
         SubtitleFontSizePreset.Small -> 36.0
         SubtitleFontSizePreset.Medium -> 44.0
         SubtitleFontSizePreset.Large -> 56.0

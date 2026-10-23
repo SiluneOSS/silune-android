@@ -861,10 +861,11 @@ class TvSettingsViewModel(
     }
 
     private fun SubtitleFontSizePreset.toTvSubtitleSize(): SubtitleSize = when (this) {
+        SubtitleFontSizePreset.XSmall,
         SubtitleFontSizePreset.Small -> SubtitleSize.Small
         SubtitleFontSizePreset.Medium -> SubtitleSize.Medium
-        // Large / XLarge / XXLarge — collapse anything bigger than Medium
-        // back onto Large in the TV picker (the TV UI only exposes 3 sizes).
+        // Preserve the legacy three-size snapshot; the appearance picker
+        // reads the full preset directly from SubtitleAppearance.
         SubtitleFontSizePreset.Large,
         SubtitleFontSizePreset.XLarge,
         SubtitleFontSizePreset.XXLarge -> SubtitleSize.Large

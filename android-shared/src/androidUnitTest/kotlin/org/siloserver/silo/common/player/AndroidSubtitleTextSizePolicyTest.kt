@@ -18,6 +18,7 @@ class AndroidSubtitleTextSizePolicyTest {
     @Test
     fun televisionUsesFixedCouchReadableSpLadder() {
         val expected = mapOf(
+            SubtitleFontSizePreset.XSmall to 14f,
             SubtitleFontSizePreset.Small to 18f,
             SubtitleFontSizePreset.Medium to 22f,
             SubtitleFontSizePreset.Large to 26f,

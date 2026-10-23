@@ -450,6 +450,15 @@ internal fun encodeSettingWireValue(key: String, raw: String): JsonElement? = wh
         raw.toLongOrNull()?.let { if (it <= 0L) JsonNull else JsonPrimitive(it) }
     key in SettingKeys.INT_KEYS -> raw.toLongOrNull()?.let(::JsonPrimitive)
     key in SettingKeys.DOUBLE_KEYS -> raw.toDoubleOrNull()?.let(::JsonPrimitive)
+    // Extra small is a TV-local extension to the server's five-size schema.
+    key == SettingKeys.PLAYBACK_SUBTITLE_APPEARANCE ->
+        (runCatching { Json.parseToJsonElement(raw) }.getOrNull() as? JsonObject)?.let { appearance ->
+            if (appearance["fontSize"] == JsonPrimitive("xsmall")) {
+                JsonObject(appearance + ("fontSize" to JsonPrimitive("small")))
+            } else {
+                appearance
+            }
+        }
     key in SETTING_OBJECT_KEYS ->
         runCatching { Json.parseToJsonElement(raw) }.getOrNull() as? JsonObject
     key in NULLABLE_LANGUAGE_KEYS && raw.isEmpty() -> JsonNull

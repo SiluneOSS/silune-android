@@ -1107,6 +1107,39 @@ class AndroidPlayerSettingsStoreTest {
     }
 
     @Test
+    fun `extra small survives device refresh but yields to another size or profile settings`() = runTest {
+        val custom = SubtitleAppearance.DEFAULT.copy(fontSize = SubtitleFontSizePreset.XSmall)
+        val remote = custom.copy(fontSize = SubtitleFontSizePreset.Small)
+        val api = FakeSettingsApi(
+            effective = mapOf(stored(PlaybackSettingsKeys.SubtitleAppearance, Json.parseToJsonElement(remote.toJsonString()))),
+        )
+        val store = newStore(repository = SettingsRepository(api))
+        store.setSubtitleAppearance(custom)
+
+        store.refreshFromServer()
+        store.refreshFromServer()
+        assertEquals(custom, store.subtitleAppearanceFlow.first())
+        assertEquals(custom, store.savedCustomSubtitleAppearanceFlow.first())
+
+        val changed = remote.copy(fontSize = SubtitleFontSizePreset.Medium)
+        api.effective = mapOf(stored(PlaybackSettingsKeys.SubtitleAppearance, Json.parseToJsonElement(changed.toJsonString())))
+        store.refreshFromServer()
+        assertEquals(changed, store.subtitleAppearanceFlow.first())
+
+        store.setSubtitleAppearance(custom)
+        api.effective = mapOf(stored(
+            PlaybackSettingsKeys.SubtitleAppearance,
+            Json.parseToJsonElement(remote.toJsonString()),
+            scope = SettingScope.PROFILE.wire,
+        ))
+        store.setSubtitleDeviceOverrideEnabled(false)
+        assertEquals(remote, store.subtitleAppearanceFlow.first())
+        assertEquals(custom, store.savedCustomSubtitleAppearanceFlow.first())
+        store.setSubtitleDeviceOverrideEnabled(true)
+        assertEquals(custom, store.subtitleAppearanceFlow.first())
+    }
+
+    @Test
     fun `disabling subtitle override retains last custom appearance locally`() = runTest {
         val fallback = SubtitleAppearance.DEFAULT.copy(fontColor = "#00ff00")
         val repo = SettingsRepository(

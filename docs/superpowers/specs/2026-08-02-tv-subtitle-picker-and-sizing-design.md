@@ -26,6 +26,7 @@ Television playback uses fixed SP sizes for Media3-rendered plain-text subtitles
 
 | Preset | TV size |
 | --- | ---: |
+| Extra small | 14sp |
 | Small | 18sp |
 | Medium | 22sp |
 | Large | 26sp |
@@ -46,7 +47,12 @@ Subtitle sizing is represented by a pure Android subtitle text-size policy that 
 
 Picker dismissal occurs when the user commits a valid row, not when asynchronous subtitle materialization completes. Existing transaction state remains authoritative if selection later reports a failure. Invalid or missing stable IDs do not select or dismiss anything.
 
-No persistence format changes are required: stored presets remain the existing `SubtitleFontSizePreset` enum values. Existing users therefore receive the new television rendering for their current preset without migration.
+Existing presets keep their rendering and require no migration. The fork adds a
+TV-only Extra small choice (`xsmall`) below Small. It persists in the scoped local
+appearance; server writes send the supported `small` value. A device-scoped Small
+response retains a locally selected Extra small value. A different server size
+or a return to profile settings takes precedence. Restoring the device's saved
+custom appearance restores Extra small too.
 
 ## Testing
 
@@ -61,4 +67,4 @@ No persistence format changes are required: stored presets remain the existing `
 - Changing the Settings HUD subtitle picker or closing the Settings HUD after track selection.
 - Changing subtitle selection, search, download, translation, remount, or failure behavior.
 - Overriding ASS/SSA authored styling.
-- Changing phone subtitle sizes or serialized subtitle preferences.
+- Changing phone subtitle sizes or the server's subtitle appearance schema.
