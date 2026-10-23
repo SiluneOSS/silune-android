@@ -15,6 +15,8 @@ internal fun androidSubtitleTextSize(
 ): AndroidSubtitleTextSize = when (presentation) {
     AndroidSubtitlePresentation.Phone -> AndroidSubtitleTextSize.Fractional(
         when (preset) {
+            // Extra small is offered only on TV; keep the phone's minimum unchanged.
+            SubtitleFontSizePreset.XSmall -> 22.5f
             SubtitleFontSizePreset.Small -> 22.5f
             SubtitleFontSizePreset.Medium -> 29.25f
             SubtitleFontSizePreset.Large -> 36f
@@ -24,6 +26,7 @@ internal fun androidSubtitleTextSize(
     )
     AndroidSubtitlePresentation.Television -> AndroidSubtitleTextSize.FixedSp(
         when (preset) {
+            SubtitleFontSizePreset.XSmall -> 14f
             SubtitleFontSizePreset.Small -> 18f
             SubtitleFontSizePreset.Medium -> 22f
             SubtitleFontSizePreset.Large -> 26f

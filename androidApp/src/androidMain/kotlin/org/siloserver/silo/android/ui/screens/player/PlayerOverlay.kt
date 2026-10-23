@@ -914,6 +914,7 @@ internal fun playerTracksValue(state: PlayerViewModel.PlayerUiState): String? =
 /** "Large · White · Box" for the settings menu's Subtitle style row. */
 internal fun subtitleStyleSummary(appearance: org.siloserver.silo.model.settings.SubtitleAppearance): String {
     val size = when (appearance.fontSize) {
+        org.siloserver.silo.model.settings.SubtitleFontSizePreset.XSmall -> "Extra small"
         org.siloserver.silo.model.settings.SubtitleFontSizePreset.Small -> "Small"
         org.siloserver.silo.model.settings.SubtitleFontSizePreset.Medium -> "Medium"
         org.siloserver.silo.model.settings.SubtitleFontSizePreset.Large -> "Large"

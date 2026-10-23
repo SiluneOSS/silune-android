@@ -22,6 +22,7 @@ import org.siloserver.silo.model.settings.SettingKeys
 import org.siloserver.silo.model.settings.SettingScope
 import org.siloserver.silo.model.settings.SubtitleAppearance
 import org.siloserver.silo.model.settings.SubtitleAppearanceProjection
+import org.siloserver.silo.model.settings.SubtitleFontSizePreset
 import org.siloserver.silo.network.ApiResult
 import org.siloserver.silo.repository.SettingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -979,6 +980,8 @@ class AndroidPlayerSettingsStore(
         store.edit { prefs ->
             if (!isCurrent()) return@edit
             applied = true
+            val keepExtraSmall = prefs.boolFor(scope, PlaybackSettingsKeys.SubtitleUsesDeviceOverride, false) &&
+                prefs.projectedAppearance(scope).fontSize == SubtitleFontSizePreset.XSmall
             val overrides = prefs[deviceOverridesKey(scope)].orEmpty().toMutableSet()
             val unconfirmed = prefs[unconfirmedKeysKey(scope)].orEmpty().toMutableSet()
             for (key in RemoteDeviceSettings) {
@@ -1025,6 +1028,16 @@ class AndroidPlayerSettingsStore(
             prefs[booleanPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.SubtitleUsesDeviceOverride)] =
                 hasDeviceOverride
             if (subtitleEntry != null) {
+                val resolved = SubtitleAppearance.decode(subtitleEntry.value.toString()).let { appearance ->
+                    // The server stores Small for our local Extra small preset.
+                    // Restore it only while this device's override still applies.
+                    if (hasDeviceOverride && keepExtraSmall && appearance.fontSize == SubtitleFontSizePreset.Small) {
+                        appearance.copy(fontSize = SubtitleFontSizePreset.XSmall)
+                    } else {
+                        appearance
+                    }
+                }
+                prefs[stringPreferencesKey(scope.keyPrefix + PlaybackSettingsKeys.SubtitleAppearance)] = resolved.toJsonString()
                 // The granular slots are an overlay on the composite, so a
                 // resolved appearance has to be flattened back into them. Left
                 // alone, the previous device's field values would win over the
@@ -1032,11 +1045,11 @@ class AndroidPlayerSettingsStore(
                 writeGranularAppearance(
                     prefs,
                     scope,
-                    SubtitleAppearance.decode(subtitleEntry.value.toString()),
+                    resolved,
                 )
                 if (hasDeviceOverride) {
                     prefs[stringPreferencesKey(scope.keyPrefix + SAVED_CUSTOM_SUBTITLE_APPEARANCE)] =
-                        subtitleEntry.value.toString()
+                        resolved.toJsonString()
                 }
             }
         }

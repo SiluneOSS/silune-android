@@ -19,6 +19,7 @@ import org.siloserver.silo.model.settings.pointSize
 object TvSubtitleAppearanceOptions {
     data class PreviewDecoration(val outline: Boolean, val shadow: Boolean)
     val FONT_SIZES: List<Pair<SubtitleFontSizePreset, String>> = listOf(
+        SubtitleFontSizePreset.XSmall to "Extra small",
         SubtitleFontSizePreset.Small to "Small",
         SubtitleFontSizePreset.Medium to "Medium",
         SubtitleFontSizePreset.Large to "Large",

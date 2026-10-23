@@ -425,7 +425,8 @@ private object SubtitleOptionLabels {
         SubtitlePositionPreset.Top to "Top",
     )
 
-    fun fontSize(value: SubtitleFontSizePreset) = FONT_SIZES.first { it.first == value }.second
+    fun fontSize(value: SubtitleFontSizePreset) =
+        if (value == SubtitleFontSizePreset.XSmall) "Extra small" else FONT_SIZES.first { it.first == value }.second
 
     fun fontFamily(value: String) =
         FONT_FAMILIES.firstOrNull { it.first.equals(value, ignoreCase = true) }?.second ?: value

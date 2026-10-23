@@ -809,6 +809,7 @@ internal fun subtitleBottomPaddingFractionForCanvas(
  * upscaling real pixels and the text ladder's 1.8x top end would visibly smear.
  */
 internal fun bitmapCueScaleFor(preset: SubtitleFontSizePreset): Float = when (preset) {
+    SubtitleFontSizePreset.XSmall -> 0.65f
     SubtitleFontSizePreset.Small -> 0.85f
     SubtitleFontSizePreset.Medium -> 1f
     SubtitleFontSizePreset.Large -> 1.15f

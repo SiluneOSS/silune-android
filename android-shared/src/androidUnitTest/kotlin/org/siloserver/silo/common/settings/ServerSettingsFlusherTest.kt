@@ -7,6 +7,8 @@ import org.siloserver.silo.model.settings.SettingScopeIdentity
 import org.siloserver.silo.model.settings.SettingsContractCapabilities
 import org.siloserver.silo.model.settings.StoredSettingValue
 import org.siloserver.silo.model.settings.SubtitleAppearance
+import org.siloserver.silo.model.settings.SubtitleFontSizePreset
+import kotlinx.serialization.json.Json
 import org.siloserver.silo.network.ApiResult
 import org.siloserver.silo.network.api.SettingsApi
 import io.ktor.client.HttpClient
@@ -26,6 +28,16 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ServerSettingsFlusherTest {
+
+    @Test
+    fun `extra small encodes as server-compatible small without changing other appearance fields`() {
+        val appearance = SubtitleAppearance.DEFAULT.copy(fontSize = SubtitleFontSizePreset.XSmall, textOpacity = 65)
+        assertEquals(
+            Json.parseToJsonElement(appearance.copy(fontSize = SubtitleFontSizePreset.Small).toJsonString()),
+            encodeSettingWireValue(SettingKeys.PLAYBACK_SUBTITLE_APPEARANCE, appearance.toJsonString()),
+        )
+        assertEquals(appearance, SubtitleAppearance.decode(appearance.toJsonString()))
+    }
 
     @Test
     fun `queued retry cannot cross same-profile relogin or missing authority`() = runTest {
