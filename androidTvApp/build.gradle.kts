@@ -176,7 +176,7 @@ android {
         // phone app requires android.hardware.touchscreen). The `namespace`
         // above stays distinct so the generated R/BuildConfig classes don't
         // collide with the phone module.
-        applicationId = "org.siloserver.silo"
+        applicationId = "org.silune.app"
         minSdk = 24
         targetSdk = 36
         // Two artifacts under one listing need distinct versionCodes: phone =

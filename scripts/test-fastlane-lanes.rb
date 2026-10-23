@@ -90,7 +90,7 @@ upload_settings = {"PLAY_TRACK" => "beta", "PLAY_RELEASE_NAME" => "1.1.0 (22)"}
 scenario("upload", upload_settings, BUNDLES + [CHANGELOG]) do |lanes, root|
   lanes.run(:upload)
   upload = lanes.uploads.fetch(0)
-  check(upload[:package_name] == "org.siloserver.silo", "upload: package name")
+  check(upload[:package_name] == "org.silune.app", "upload: package name")
   check(upload[:json_key_data] == '{"fixture":true}', "upload: publisher key")
   check(upload[:track] == "beta", "upload: track")
   check(upload[:release_status] == "completed", "upload: release status")

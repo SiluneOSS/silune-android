@@ -89,7 +89,7 @@ val diagnosticsModule = module {
     single<HostedDiagnosticsCredentialStore> {
         EncryptedPreferencesHostedDiagnosticsCredentialStore(get())
     }
-    single { HostedDiagnosticsInstallationManager(get(), get(), get()) }
+    single { HostedDiagnosticsInstallationManager(get(), get(), get(), appId = androidContext().packageName) }
     single<HostedDiagnosticsReportDeleter> { DefaultHostedDiagnosticsReportDeleter(get(), get()) }
     single<DiagnosticsIdentityResolver> {
         DestinationDiagnosticsIdentityResolver(

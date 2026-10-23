@@ -725,7 +725,7 @@ concern. Do not open a pull request unless asked.
   participant capability and room behavior with participant credentials from
   local configuration, including `X-Profile-Token` for PIN profiles.
 - [ ] Devices: claim phone and TV emulators through the device hub and never
-  bypass another task's claim. Both apps use `org.siloserver.silo`, so each
+  bypass another task's claim. Both apps use `org.silune.app`, so each
   participant needs its own device. Debug builds are signed with each build
   host's debug keystore; install from one host or uninstall first. Don't clear
   app data as routine setup.

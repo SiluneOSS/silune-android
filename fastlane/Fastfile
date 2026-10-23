@@ -10,7 +10,7 @@
 
 default_platform(:android)
 
-PACKAGE_NAME = "org.siloserver.silo"
+PACKAGE_NAME = "org.silune.app"
 BUNDLES = %w[
   androidApp/build/outputs/bundle/release/androidApp-release.aab
   androidTvApp/build/outputs/bundle/release/androidTvApp-release.aab

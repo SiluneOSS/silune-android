@@ -55,7 +55,7 @@ maintained and is not an official Silo release.
 | | |
 |---|---|
 | **Apps** | Android phone · Android TV |
-| **Application ID** | `org.siloserver.silo` (shared by phone and TV) |
+| **Application ID** | `org.silune.app` (shared by phone and TV) |
 | **Language / UI** | Kotlin 2.1.20 · Jetpack Compose (Material 3) · Compose for TV (`androidx.tv`) |
 | **Playback** | AndroidX **Media3 / ExoPlayer** 1.11.0 with a pinned FFmpeg audio fallback extension |
 | **Networking** | **Ktor** 3.1.2 client · kotlinx.serialization · WebSockets for realtime |
@@ -290,7 +290,7 @@ Known gaps the docs track: TV has no reader/ebooks and no downloads management b
 
 ## Notes
 
-- The phone and TV apps share the application ID `org.siloserver.silo`; their
+- The phone and TV apps share the application ID `org.silune.app`; their
   manifests distinguish touchscreen and leanback devices. Silune builds are
   distributed through this fork's GitHub Releases.
 - The Android modules target Java 21.
