@@ -1,12 +1,22 @@
 # Silune daily releases
 
-The fork publishes optimized, signed phone and TV APKs on
+**Silune — your media, after dark.**
+
+Silune is an unofficial fork of the Silo Android phone and TV clients. Its
+fork changes are an OLED-focused visual identity and an HEVC compatibility
+patch for NVIDIA Shield setups. The rest of the client feature set comes
+from Silo.
+
+The visual identity uses a purple split-prism mark, charcoal launcher
+backgrounds, and matching wordmarks and TV artwork. The playback patch is
+**Ignore HEVC Level Limits**, an On/Off switch enabled by default. On removes
+HEVC level bounds from capability reports; Off uses the decoder's reported
+levels. Other compatibility checks still apply. This does not increase the
+hardware decoder's actual capabilities. Existing saved numeric levels become
+On; a saved Off stays Off.
+
+The release workflow publishes optimized, signed phone and TV APKs on
 [GitHub Releases](https://github.com/SigmaStreams/silo-android/releases).
-These are unofficial builds of the Silo Android clients, with Silune
-branding and Ignore HEVC Level Limits enabled by default. The playback setting
-is an On/Off switch: On removes HEVC level bounds from capability reports, while
-Off uses the decoder's reported levels. Other compatibility checks still apply.
-Existing saved numeric levels become On; a saved Off stays Off.
 
 ## Schedule and manual builds
 

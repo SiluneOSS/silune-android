@@ -1,6 +1,11 @@
-# Silo Android — Feature List
+# Silune — Feature List
 
-A detailed inventory of what the Android **phone** and **TV** clients do today. Legend:
+Silune is an unofficial fork of Silo's Android **phone** and **TV** clients.
+Its fork changes are the OLED-focused branding and the default-on HEVC level
+bypass for Shield setups. The broader feature set below is inherited from Silo;
+see the [README](README.md#silune-changes) for the fork overview.
+
+Legend:
 
 - ✅ implemented
 - 🟡 partial / basic ("bones-level") — works but slated for improvement
@@ -25,6 +30,7 @@ File pointers are repository-relative.
 | Runtime recovery (undecodable track/stall/error → replan) | ✅ | ✅ | `PlaybackPreflightListener` + `PlaybackSessionManager.replanActiveVideoSession` |
 | Mid-stream audio/subtitle-track switch | ✅ | ✅ | Protocol-v3 replan; may change delivery |
 | Hardware decoder enumeration (H.264/HEVC/AV1/VP9/DV) | ✅ | ✅ | `MediaCodecCapabilitiesProbe` |
+| Ignore HEVC Level Limits (Silune patch) | ✅ | ✅ | Enabled by default. Omits HEVC level bounds from capability reports; other compatibility checks remain. Turn it off to use decoder-reported levels. `MediaCodecCapabilitiesProbe`, `IgnoreHevcLevelLimitsBinder` |
 | Dolby Vision profiles 5 / 7 / 8 | 🟡 | 🟡 | Advertised only from codec + display probes; P7 additionally requires concurrent DV and HEVC decoder instances. 4K DV output still requires fixture validation on a DV display. |
 | Panel HDR probe (HDR10, HDR10+, HLG, DV) + per-profile HDR toggle | ✅ | ✅ | `DisplayHdrProbe` |
 | Audio passthrough (E-AC3 JOC/Atmos, TrueHD, DTS-HD) | ✅ | ✅ | TV prioritizes passthrough; `AudioCapabilityManager` |

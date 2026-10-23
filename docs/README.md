@@ -1,7 +1,12 @@
-# Silo Android Docs
+# Silune documentation
 
-Start with the root [README](../README.md) for architecture/build instructions and
-[FEATURES](../FEATURES.md) for the current exposed feature inventory.
+**Your media, after dark.**
+
+Silune is an unofficial Silo Android fork with OLED-focused branding and an
+HEVC compatibility patch for NVIDIA Shield setups. Start with the root
+[README](../README.md) for the project overview, APK downloads, and build
+instructions. [FEATURES](../FEATURES.md) inventories the client features
+inherited from Silo and the fork's HEVC setting.
 
 ## Current Product Truth
 
@@ -31,7 +36,8 @@ Start with the root [README](../README.md) for architecture/build instructions a
 
 ## Releasing
 
-- How to make tester builds and store releases: [`releasing.md`](releasing.md)
+- Silune APKs, daily upstream sync, signing, and verification: [`fork-releases.md`](fork-releases.md)
+- Inherited upstream tester/store release tooling: [`releasing.md`](releasing.md)
 
 ## API v2
 
@@ -45,7 +51,7 @@ Start with the root [README](../README.md) for architecture/build instructions a
 
 ## Folders
 
-- `media3/` - Android playback research and implementation notes.
+- `playback/` - Android playback architecture, contracts, and validation.
 - `superpowers/specs/` - historical design specs. Useful context, but not always
   current product truth.
 - `superpowers/plans/` - historical implementation plans. Prefer the root
