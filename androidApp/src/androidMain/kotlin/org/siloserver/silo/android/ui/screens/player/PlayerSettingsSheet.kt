@@ -82,6 +82,8 @@ fun PlayerSettingsSheet(
     onOpenSleepTimer: () -> Unit = {},
     stats: PlayerStatsSnapshot = PlayerStatsSnapshot(),
     onOpenPlaybackStats: () -> Unit = {},
+    audioNormalizationEnabled: Boolean = false,
+    onSetAudioNormalizationEnabled: (Boolean) -> Unit = {},
     audioDelayMs: Int = 0,
     audioDelayEnabled: Boolean = true,
     onSetAudioDelay: (Int) -> Unit = {},
@@ -158,6 +160,12 @@ fun PlayerSettingsSheet(
                             onClick = { handOff(onOpenSubtitleStyle) },
                             separator = true,
                         )
+                        PlayerSwitchRow(
+                            label = "Night mode",
+                            checked = audioNormalizationEnabled,
+                            onCheckedChange = onSetAudioNormalizationEnabled,
+                            separator = true,
+                        )
                         PlayerValueRow(
                             label = "Sync",
                             value = "${formatDelayMs(audioDelayMs)} · ${formatDelayMs(subtitleDelayMs)}",
@@ -165,6 +173,8 @@ fun PlayerSettingsSheet(
                             separator = true,
                         )
                     }
+
+                    PlayerFootnote("Night mode softens loud scenes and raises quiet dialogue. Uses decoded audio instead of passthrough.")
 
                     PlayerSectionHeader("This session")
                     PlayerGroup {

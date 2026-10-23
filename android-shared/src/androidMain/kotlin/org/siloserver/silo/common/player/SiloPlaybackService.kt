@@ -126,6 +126,7 @@ class SiloPlaybackService : MediaSessionService() {
     private val analyticsListener: PlaybackAnalyticsListener by inject()
     private val playerSettingsStore: PlayerSettingsStore by inject()
     private val delayProcessor: DelayAudioProcessor by inject()
+    private val audioNormalization: org.siloserver.silo.common.player.audio.AudioNormalizationController by inject()
     private val subtitleOffsetHolder: SubtitleOffsetHolder by inject()
     private val seekIntervalStore: SeekIntervalStore by inject()
 
@@ -201,6 +202,12 @@ class SiloPlaybackService : MediaSessionService() {
                 _positionMs.value = activePlayer?.currentPosition ?: 0L
                 delay(POSITION_TICK_MS)
             }
+        }
+
+        scope.launch {
+            playerSettingsStore.audioNormalizationEnabledFlow
+                .distinctUntilChanged()
+                .collect(audioNormalization::setEnabled)
         }
 
         // Mirror the per-profile AudioSyncMs preference into the active

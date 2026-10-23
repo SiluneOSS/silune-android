@@ -868,6 +868,13 @@ class PlayerViewModel(
     /** False when the server is known to discard subtitle text opacity. */
     val subtitleTextOpacitySupported: StateFlow<Boolean> = playerSettingsStore.subtitleTextOpacitySupportedFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    val audioNormalizationEnabled: StateFlow<Boolean> = playerSettingsStore.audioNormalizationEnabledFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun setAudioNormalizationEnabled(value: Boolean) {
+        viewModelScope.launch { playerSettingsStore.setAudioNormalizationEnabled(value) }
+    }
+
     /**
      * Per-device audio/subtitle delay in ms. Mirrors iOS phone's `audioSyncMs` /
      * `subtitleSyncMs` (`iosApp/Screens/Player/Sheets/PlayerSettingsSheet.swift:265-285`).

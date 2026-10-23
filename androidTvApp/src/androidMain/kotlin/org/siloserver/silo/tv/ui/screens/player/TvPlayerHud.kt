@@ -223,6 +223,8 @@ internal fun TvPlayerHud(
     onIntroSkipModeChanged: (IntroSkipMode) -> Unit,
     autoPlayNext: Boolean,
     onAutoPlayNextChanged: (Boolean) -> Unit,
+    audioNormalizationEnabled: Boolean,
+    onAudioNormalizationChanged: (Boolean) -> Unit,
     audioDelayMs: Int,
     audioDelayEnabled: Boolean,
     onAudioDelayChanged: (Int) -> Unit,
@@ -294,7 +296,7 @@ internal fun TvPlayerHud(
     // fall back to the default search instead.
     val paneEntryAvailable = when (selectedTab) {
         HudTab.Video, HudTab.Subtitles -> true
-        HudTab.Audio -> activeVersion?.audioTracks.orEmpty().size > 1 || audioDelayEnabled
+        HudTab.Audio -> true
         HudTab.Chapters -> chapters.isNotEmpty()
         HudTab.Info, HudTab.Stats -> false
     }
@@ -602,6 +604,8 @@ internal fun TvPlayerHud(
                         pendingLocalAudioOrdinal = desiredAudioOrdinal
                             ?.takeUnless { desiredAudioConfirmed },
                         onSelectAudio = onSelectAudio,
+                        audioNormalizationEnabled = audioNormalizationEnabled,
+                        onAudioNormalizationChanged = onAudioNormalizationChanged,
                         audioDelayMs = audioDelayMs,
                         audioDelayEnabled = audioDelayEnabled,
                         onAudioDelayChanged = onAudioDelayChanged,
@@ -1343,6 +1347,8 @@ private fun HudAudioPane(
     planAudioOrdinal: Int?,
     pendingLocalAudioOrdinal: Int?,
     onSelectAudio: (Int) -> Unit,
+    audioNormalizationEnabled: Boolean,
+    onAudioNormalizationChanged: (Boolean) -> Unit,
     audioDelayMs: Int,
     audioDelayEnabled: Boolean,
     onAudioDelayChanged: (Int) -> Unit,
@@ -1434,11 +1440,19 @@ private fun HudAudioPane(
                 )
 
                 HudFocusedSettingRow(
+                    label = "Night mode",
+                    value = onOffLabel(audioNormalizationEnabled),
+                    enabled = enabled,
+                    showsChevron = false,
+                    entryFocusRequester = entryFocusRequester.takeIf { !trackSelectable },
+                    onActivate = { onAudioNormalizationChanged(!audioNormalizationEnabled) },
+                )
+
+                HudFocusedSettingRow(
                     label = "Delay (PCM only)",
                     // Output → Mode says why; the row itself just says it can't.
                     value = if (audioDelayEnabled) delayLabel(audioDelayMs) else "Unavailable",
                     enabled = enabled && audioDelayEnabled,
-                    entryFocusRequester = entryFocusRequester.takeIf { !trackSelectable && audioDelayEnabled },
                     onActivate = {
                         onPresentPicker(
                             delayPicker(
