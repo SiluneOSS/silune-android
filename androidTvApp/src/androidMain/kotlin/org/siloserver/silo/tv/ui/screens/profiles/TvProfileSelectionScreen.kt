@@ -336,13 +336,13 @@ fun TvProfileSelectionScreen(
                 TvDialogOption(
                     key = "remember",
                     title = "Remember",
-                    subtitle = "Open ${rememberOffer.name} when Silo starts on this TV.",
+                    subtitle = "Open ${rememberOffer.name} when Silune starts on this TV.",
                     onClick = { viewModel.answerRememberOffer(remember = true) },
                 ),
                 TvDialogOption(
                     key = "ask",
                     title = "Ask every time",
-                    subtitle = "Show Who's watching when Silo starts. Change this in Settings > General > Profile Selection.",
+                    subtitle = "Show Who's watching when Silune starts. Change this in Settings > General > Profile Selection.",
                     onClick = { viewModel.answerRememberOffer(remember = false) },
                 ),
             ),

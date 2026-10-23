@@ -45,7 +45,7 @@ private fun voiceSearchIntent(): Intent =
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
         )
-        putExtra(RecognizerIntent.EXTRA_PROMPT, "Search Silo")
+        putExtra(RecognizerIntent.EXTRA_PROMPT, "Search Silune")
         putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
     }
 

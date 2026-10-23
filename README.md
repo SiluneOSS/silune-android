@@ -1,17 +1,41 @@
-# Silo Android
+<p align="center">
+  <img src="androidApp/src/androidMain/res/drawable/silo_wordmark.png" alt="Silune" width="420">
+</p>
 
-Android **phone** and **Android TV** clients for the [Silo](https://github.com/Silo-Server/silo-server) self-hosted media server — stream and download your movies, shows, music, audiobooks, and ebooks, with quality-aware playback and multi-server/multi-profile support.
+# Silune
 
-Built as a Kotlin Multiplatform project: one shared business-logic core, two Jetpack Compose apps (touch + 10-foot TV). This branch uses the full Silo namespace cut: Kotlin packages live under `org.siloserver.silo`, and both apps share a single application ID `org.siloserver.silo` so they publish as one Google Play listing (Play routes each build by manifest feature filtering). Installs under legacy IDs do not upgrade in place; users should expect a fresh app install, sign-in, and offline media download.
+**Your media, after dark.**
 
-> **Status:** WIP (`v0.3.x`). Silo Android is pre-1.0 and some areas remain under active development (see [Roadmap](#roadmap)).
->
-> **Current exposure note:** Requests is live on both Android surfaces, gated by the server's `requests_enabled` flag (`/api/v2/requests/status`), and reached from the profile menu and search on phone and from a top-bar tab and search on TV — matching the Apple clients. Request administration (approve, decline, retry, limits, auto-approve) stays in web admin. Other admin surfaces and session management are not exposed in the Android clients. Watch Party is experimental, behind Settings → Experimental → Watch Party (on in debug builds, off in release builds).
+Silune is an unofficial fork of the [Silo Android clients](https://github.com/Silo-Server/silo-android)
+for Android phones and Android TV, with an OLED-focused visual identity and an
+HEVC compatibility patch for NVIDIA Shield setups.
+
+Stream your movies, shows, music, and audiobooks from your existing Silo server.
+The phone app also supports downloads and ebooks. Silune builds on Silo's
+playback, browsing, profiles, and other client features; you need a running
+[Silo server](https://github.com/Silo-Server/silo-server) to use it.
+
+## Silune changes
+
+| Focus | What this fork changes |
+| --- | --- |
+| OLED-focused branding | A purple split-prism icon on charcoal, with matching phone and TV launcher artwork, in-app wordmarks, a short Silune startup animation, and a TV banner. |
+| Shield HEVC compatibility | **Ignore HEVC Level Limits**, a simple On/Off setting enabled by default on phone and TV. It lets playback be attempted when a file exceeds the decoder's advertised HEVC level. |
+
+The HEVC patch changes the level information reported to the server. Other
+compatibility checks still apply, and it cannot increase the decoder's actual
+capabilities. Turn **Ignore HEVC Level Limits** off in playback settings to use
+the decoder's reported levels again.
+
+The visual identity and HEVC patch are Silune's fork changes. The broader app
+features described below are inherited from Silo. Silune is independently
+maintained and is not an official Silo release.
 
 ---
 
 ## Table of contents
 
+- [Silune changes](#silune-changes)
 - [What's inside](#whats-inside)
 - [Install APKs](#install-apks)
 - [Feature overview](#feature-overview)
@@ -31,7 +55,7 @@ Built as a Kotlin Multiplatform project: one shared business-logic core, two Jet
 | | |
 |---|---|
 | **Apps** | Android phone · Android TV |
-| **Application ID** | `org.siloserver.silo` (shared by phone + TV — one Play listing) |
+| **Application ID** | `org.silune.app` (shared by phone and TV) |
 | **Language / UI** | Kotlin 2.1.20 · Jetpack Compose (Material 3) · Compose for TV (`androidx.tv`) |
 | **Playback** | AndroidX **Media3 / ExoPlayer** 1.11.0 with a pinned FFmpeg audio fallback extension |
 | **Networking** | **Ktor** 3.1.2 client · kotlinx.serialization · WebSockets for realtime |
@@ -41,7 +65,7 @@ Built as a Kotlin Multiplatform project: one shared business-logic core, two Jet
 | **Images** | Coil 3 (Ktor-backed) |
 | **SDK** | Android 7.0+ / minSdk 24 · targetSdk 36 · compileSdk 36 · JDK 21 |
 
-The clients talk to a Silo server over its `/api/v1/*` REST + WebSocket API. The server owns the library, scanning, metadata, transcoding decisions, and auth; the clients render it and drive playback.
+The clients talk to a Silo server over its REST and WebSocket APIs. The server owns the library, scanning, metadata, transcoding decisions, and auth; the clients render it and drive playback.
 
 Android 7.0 and 7.1 (API 24/25) are supported on both phone and Android TV. Video and audiobook playback use the same Media3 service on every supported Android version.
 
@@ -49,27 +73,36 @@ Android 7.0 and 7.1 (API 24/25) are supported on both phone and Android TV. Vide
 
 ## Install APKs
 
-Each store release publishes release-signed APKs, and these links always serve the latest one.
+Get Silune builds from this fork's [GitHub Releases](https://github.com/SiluneOSS/silune-android/releases).
+Choose the APK for your device:
 
-| App | Downloader code | Downloader link | Direct APK |
-|---|---:|---|---|
-| Android | `1141108` | <http://aftv.news/1141108> | <https://github.com/Silo-Server/silo-android/releases/latest/download/silo-android-latest-universal-release.apk> |
-| Android TV | `2249835` | <http://aftv.news/2249835> | <https://github.com/Silo-Server/silo-android/releases/latest/download/silo-android-tv-latest-universal-release.apk> |
+| Device | File | Latest download |
+| --- | --- | --- |
+| Android phone or tablet | `silune-phone.apk` | [Phone APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-phone.apk) |
+| NVIDIA Shield, Android TV, or Google TV | `silune-tv.apk` | [TV APK](https://github.com/SiluneOSS/silune-android/releases/latest/download/silune-tv.apk) |
 
-To test upcoming changes, these links always serve the newest tester build instead. Tester builds have higher version codes than the store build, so going back to the store build means uninstalling first. See [docs/releasing.md](docs/releasing.md).
+These download links require a published Silune release marked **Latest**.
+Earlier releases keep their original names and assets. The old upstream
+Downloader codes install official Silo builds, so use this fork's APKs for Silune.
 
-| App | Downloader code | Downloader link | Direct APK |
-|---|---:|---|---|
-| Android beta | `2988950` | <http://aftv.news/2988950> | <https://github.com/Silo-Server/silo-android/releases/download/beta-latest/silo-android-latest-beta.apk> |
-| Android TV beta | `6033910` | <http://aftv.news/6033910> | <https://github.com/Silo-Server/silo-android/releases/download/beta-latest/silo-android-tv-latest-beta.apk> |
+Sideload the matching APK, open Silune, enter your Silo server address, and sign
+in. Set up a new Silo server through its web interface before connecting a client.
 
-Install **Downloader by AFTVnews** on Android TV / Google TV, enter the code for the app you want, then allow APK installs from Downloader when prompted.
+Silune retains the upstream application ID. Switching from an official Silo
+build or a locally debug-signed build to a SigmaStreams-signed release requires
+uninstalling the previous app, which clears its local data. Later Silune releases
+with the same signing key update in place.
+
+The daily workflow syncs upstream and builds optimized, signed APKs when tracked
+source files change. See [fork releases and signing](docs/fork-releases.md) for
+release timing, verification, build labels, and update details.
 
 ---
 
 ## Feature overview
 
-A condensed tour. For the exhaustive, per-feature checklist (with phone/TV coverage and file pointers) see **[FEATURES.md](FEATURES.md)**.
+The Silo feature set available in this fork. For the per-feature checklist,
+phone/TV coverage, and source pointers, see **[FEATURES.md](FEATURES.md)**.
 
 ### 📺 Playback (phone + TV)
 - **Adaptive delivery** — the server picks **Direct Play**, **Remux**, or **Transcode** from the device's real capabilities; the client can also fall back to transcode at runtime if a track turns out to be undecodable (e.g. an AV receiver is unplugged mid-stream).
@@ -233,15 +266,13 @@ On first launch, point the app at your Silo server URL, sign in, and pick a prof
 
 ## Contributing
 
-Right now, the most helpful way to contribute is a clear, accurate issue. We
-implement and review changes through our own workflow, and pull request volume
-has outgrown what we can review carefully, so a good issue usually helps us
-more than a pull request.
+For Silune-specific branding, build, or HEVC compatibility issues, use this
+repository's issue tracker. Include your device model, app version, Silo server
+version, and steps to reproduce the problem.
 
-Pull requests are still welcome from contributors who've had one merged in a
-Silo repository, or when a maintainer asks for one. We close other pull
-requests without review. [CONTRIBUTING.md](CONTRIBUTING.md) explains what makes
-an issue useful.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the inherited contributor guidelines
+and evidence requirements. See the [documentation index](docs/README.md) for
+playback contracts and implementation references.
 
 ---
 
@@ -259,13 +290,17 @@ Known gaps the docs track: TV has no reader/ebooks and no downloads management b
 
 ## Notes
 
-- The Android phone and TV apps share one application ID, `org.siloserver.silo`, and publish as a single Google Play listing; Play delivers the right build per device via manifest feature filtering (phone requires a touchscreen, TV requires leanback).
+- The phone and TV apps share the application ID `org.silune.app`; their
+  manifests distinguish touchscreen and leanback devices. Silune builds are
+  distributed through this fork's GitHub Releases.
 - The Android modules target Java 21.
 - The server repo lives at [`Silo-Server/silo-server`](https://github.com/Silo-Server/silo-server).
 
 ## License & Trademarks
 
-Silo Android is licensed under `AGPL-3.0-or-later`. See [LICENSE](LICENSE).
+Silune is based on [Silo Android](https://github.com/Silo-Server/silo-android)
+and is licensed under `AGPL-3.0-or-later`. The Silo contributors provide the
+underlying clients and playback implementation. See [LICENSE](LICENSE).
 
 The **Silo name, logo, and wordmark are trademarks of Silo Media L.L.C.** and
 are **not** covered by the AGPL. You're free to fork and redistribute the code,

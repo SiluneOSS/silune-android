@@ -101,7 +101,7 @@ fun SiloLogo(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.silo_wordmark),
-            contentDescription = "Silo",
+            contentDescription = "Silune",
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),

@@ -42,7 +42,7 @@
 
 set -euo pipefail
 
-APP_ID="org.siloserver.silo"
+APP_ID="org.silune.app"
 RECEIVER="$APP_ID/org.siloserver.silo.common.player.debug.PlaybackDebugReceiver"
 ACTION_STATUS="org.siloserver.silo.debug.PLAYBACK_STATUS"
 ACTION_COMMAND="org.siloserver.silo.debug.PLAYBACK_COMMAND"

@@ -256,7 +256,7 @@ fun PlaybackEpisodesSection(
     SettingsSection(
         title = "Episodes",
         footer = "Rewind on Resume skips back when you return to a partly watched title. Still Watching " +
-            "Prompt sets how many episodes play in a row before Silo asks whether you're still watching.",
+            "Prompt sets how many episodes play in a row before Silune asks whether you're still watching.",
         modifier = modifier,
     ) {
         ProfileLayeredSwitchRow(

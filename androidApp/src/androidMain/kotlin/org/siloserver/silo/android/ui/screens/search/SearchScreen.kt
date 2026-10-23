@@ -231,7 +231,7 @@ fun SearchScreen(
                 }
                 !state.hasSearched && state.query.isBlank() -> {
                     SearchEmptyState(
-                        text = "Search Silo",
+                        text = "Search Silune",
                         subtitle = if (voiceAvailable) {
                             "Find movies, shows, books, audio, and people. " +
                                 "Tap the mic to search by voice."

@@ -117,7 +117,7 @@ internal fun DiagnosticsSettingsContent(
             SettingsSection(
                 title = "Capture",
                 footer = if (hosted) {
-                    "Reports include the Silo app version and build, Android version, device model, " +
+                    "Reports include the Silune app version and build, Android version, device model, " +
                         "crash details, and diagnostic logs you review. A pseudonymous installation " +
                         "credential is not linked to an account on your self-hosted server. Username, " +
                         "email, profile, server address, and playback session IDs are omitted. Reports " +

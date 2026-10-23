@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Silune split-prism mark</title>
+  <desc>Two angular purple forms separated by a diagonal cut, with three facets on the upper form.</desc>
+  <defs>
+    <linearGradient id="lower-plane" x1="111" y1="175" x2="220" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6544C6"/>
+      <stop offset="1" stop-color="#5736B4"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(16 0)">
+    <path fill="#5736B4" d="M140 68 L119 157 L166 185 Z"/>
+    <path fill="#B59AF4" d="M140 68 L442 262 L166 185 Z"/>
+    <path fill="#6856A3" d="M166 185 L442 262 L360 310 Z"/>
+    <path fill="url(#lower-plane)" d="M111 175 L325 319 L70 443 Z"/>
+  </g>
+</svg>

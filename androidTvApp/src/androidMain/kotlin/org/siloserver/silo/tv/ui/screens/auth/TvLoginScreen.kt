@@ -964,7 +964,7 @@ private fun PasswordScreen(
         card = {
             TvUsePhoneCard(
                 if (passwordOnly) {
-                    "Signed in to Silo on your phone? Open it on the same Wi‑Fi and it can sign this TV in for you."
+                    "Signed in to Silune on your phone? Open it on the same Wi‑Fi and it can sign this TV in for you."
                 } else {
                     "Choose \"Use your phone instead\" to scan a code and approve on your phone. Nothing to type with the remote."
                 },

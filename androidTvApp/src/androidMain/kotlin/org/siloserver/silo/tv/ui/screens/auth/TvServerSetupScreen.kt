@@ -399,7 +399,7 @@ private fun AddressEntry(
             state.discoveryError?.let { TvMarqueeErrorText(it, Modifier.width(380.dp).padding(top = 8.dp)) }
         },
         card = {
-            TvUsePhoneCard("Open Silo on a phone or tablet on the same Wi‑Fi and tap Set up. It finishes this for you.")
+            TvUsePhoneCard("Open Silune on a phone or tablet on the same Wi‑Fi and tap Set up. It finishes this for you.")
         },
     )
 }

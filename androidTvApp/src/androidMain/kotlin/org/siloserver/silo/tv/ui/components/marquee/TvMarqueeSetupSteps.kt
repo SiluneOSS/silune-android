@@ -44,7 +44,7 @@ import org.siloserver.silo.tv.R
 @Composable
 fun TvMarqueeSetupSteps(modifier: Modifier = Modifier) {
     Column(modifier.width(350.dp), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-        Step(1, "Open Silo on your phone") { AppIconPicture() }
+        Step(1, "Open Silune on your phone") { AppIconPicture() }
         Step(2, "Tap Set up") { SetupCardPicture() }
         Step(3, "Finish on your phone") { DonePicture() }
     }
@@ -82,7 +82,7 @@ private fun Step(number: Int, title: String, picture: @Composable () -> Unit) {
     }
 }
 
-/** The Silo app icon: the mark on the deep blue field. */
+/** The sigma mark on the app's deep blue icon field. */
 @Composable
 private fun AppIconPicture() {
     Box(
@@ -93,7 +93,7 @@ private fun AppIconPicture() {
             .border(1.dp, Color.White.copy(alpha = 0.18f), RoundedCornerShape(11.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        // The icon draws the mark at 84% of its height.
+        // Keep the sigma mark inside the surrounding icon field.
         Image(
             painter = painterResource(R.drawable.silo_mark),
             contentDescription = null,

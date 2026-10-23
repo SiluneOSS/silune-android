@@ -42,7 +42,7 @@ class BaselineProfileGenerator {
     }
 
     private companion object {
-        const val PACKAGE_NAME = "org.siloserver.silo"
+        const val PACKAGE_NAME = "org.silune.app"
         const val SCROLL_ITERATIONS = 3
     }
 }

@@ -140,7 +140,7 @@ fun TvSignupScreen(
                 }
             },
             card = {
-                TvUsePhoneCard("Already have an account? Open Silo on a phone or tablet on the same Wi‑Fi and it can sign this TV in for you.")
+                TvUsePhoneCard("Already have an account? Open Silune on a phone or tablet on the same Wi‑Fi and it can sign this TV in for you.")
             },
         )
     }

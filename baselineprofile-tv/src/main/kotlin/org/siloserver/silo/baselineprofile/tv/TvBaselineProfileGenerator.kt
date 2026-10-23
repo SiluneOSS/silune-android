@@ -39,7 +39,7 @@ class TvBaselineProfileGenerator {
     }
 
     private companion object {
-        const val PACKAGE_NAME = "org.siloserver.silo"
+        const val PACKAGE_NAME = "org.silune.app"
         const val ROWS = 5
         const val CARDS = 4
         const val SETTLE_MS = 1_500L

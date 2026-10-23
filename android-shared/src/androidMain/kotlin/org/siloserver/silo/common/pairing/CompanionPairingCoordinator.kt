@@ -382,7 +382,7 @@ class CompanionPairingCoordinator(
         PairingFailureCode.Expired -> "The code on $tvName expired. Try again."
         PairingFailureCode.Unreachable -> "$tvName can't reach $serverName. Check the TV's network connection."
         PairingFailureCode.IdentityMismatch -> "$tvName reached a different server at that address. Nothing was signed in."
-        PairingFailureCode.UpdateRequired -> "$serverName or the Silo app on $tvName needs an update first."
+        PairingFailureCode.UpdateRequired -> "$serverName or the Silune app on $tvName needs an update first."
         PairingFailureCode.AuthFailed -> "$tvName couldn't finish signing in to $serverName."
     }
 

@@ -33,19 +33,19 @@ enum class ProfileLaunchBehavior(
     EveryTime(
         raw = "askEveryLaunch",
         title = "Every Time",
-        describe = { "Show Who's Watching whenever you return to Silo." },
+        describe = { "Show Who's Watching whenever you return to Silune." },
         awayTimeoutMs = null,
     ),
     AfterOneHour(
         raw = "afterOneHour",
         title = "After 1 Hour",
-        describe = { "Show Who's Watching when you've been away from Silo for 1 hour." },
+        describe = { "Show Who's Watching when you've been away from Silune for 1 hour." },
         awayTimeoutMs = 60 * 60 * 1000L,
     ),
     AfterTwelveHours(
         raw = "afterTwelveHours",
         title = "After 12 Hours",
-        describe = { "Show Who's Watching when you've been away from Silo for 12 hours." },
+        describe = { "Show Who's Watching when you've been away from Silune for 12 hours." },
         awayTimeoutMs = 12 * 60 * 60 * 1000L,
     ),
     ;
