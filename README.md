@@ -19,7 +19,7 @@ playback, browsing, profiles, and other client features; you need a running
 
 | Focus | What this fork changes |
 | --- | --- |
-| OLED-focused branding | A purple split-prism icon on charcoal, with matching phone and TV launcher artwork, in-app wordmarks, and a TV banner. |
+| OLED-focused branding | A purple split-prism icon on charcoal, with matching phone and TV launcher artwork, in-app wordmarks, a short Silune startup animation, and a TV banner. |
 | Shield HEVC compatibility | **Ignore HEVC Level Limits**, a simple On/Off setting enabled by default on phone and TV. It lets playback be attempted when a file exceeds the decoder's advertised HEVC level. |
 
 The HEVC patch changes the level information reported to the server. Other

@@ -125,12 +125,15 @@ charcoal (`#25252D`) launcher background. The wordmark pairs the mark with
 white lettering; the brand line is "Your media, after dark."
 
 The editable sources are `branding/silune-mark.svg` and
-`branding/silune-wordmark.svg`. Regenerate the checked-in PNGs with
-`python3 scripts/generate-silune-branding.py` (requires `rsvg-convert` and Pillow).
+`branding/silune-wordmark.svg`. Regenerate the checked-in PNGs and startup videos
+with `python3 scripts/generate-silune-branding.py` (requires `rsvg-convert`,
+Pillow, and FFmpeg with `libx264`).
 The DejaVu Sans Bold lettering is outlined for consistent rendering.
 The in-app wordmark has a transparent background.
 Android's adaptive launcher insets the transparent split-prism mark; the 320×180 TV
 banner centers a 170-pixel-wide wordmark inside Fire TV's square crop.
+Phone and TV share a 1.6-second Silune wordmark fade on pure black at cold launch.
+The videos retain the 720p30 AVC 3.1 and 1080p60 AVC 4.2 decoder tiers.
 Resource IDs and Kotlin symbol names remain stable to reduce merge conflicts.
 The Silune artwork is licensed under AGPL-3.0-or-later.
 
