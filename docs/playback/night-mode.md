@@ -51,10 +51,11 @@ server settings key.
 `scripts/check-night-mode.py` protects the audio effect and controller logic,
 including Plezy's parameters, fallback, session cleanup, PCM gating, tunneling
 and offload restrictions. It checks saved-setting and player integration on
-phone and TV. The daily sync runs it before pushing a merge; failures leave the
-remote branch unchanged. Intentional logic changes require review and an
-updated source fingerprint. Run `python3 scripts/test-check-night-mode.py`
-after updating the guard.
+phone and TV. The **Night mode guard** GitHub Actions workflow runs the guard
+and its regression tests on pushes and pull requests. A failure blocks that
+check. Intentional logic changes require review and an updated source
+fingerprint. Run `python3 scripts/check-night-mode.py` before merging upstream
+and `python3 scripts/test-check-night-mode.py` after updating the guard.
 
 ## Device validation
 
